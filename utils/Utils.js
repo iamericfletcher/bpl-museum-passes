@@ -1,15 +1,19 @@
-const someCommonValues = ['common', 'values'];
+import * as cheerio from "cheerio";
 
-export const doSomethingWithInput = (theInput) => {
-    //Do something with the input
-    return theInput.toUpperCase();
-};
+export function getPlaces(props) {
 
-export const getMuseumNames = () => {
-    console.log('getMuseumNames called');
+}
 
 
 
+
+
+export const getMuseums = (date, museums) => {
+    console.log("running getMuseums utility function")
+
+
+
+    console.log("getMuseums utility function complete")
 
 
 };

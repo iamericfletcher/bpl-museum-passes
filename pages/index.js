@@ -8,18 +8,19 @@ import Copyright from '../src/components/Copyright';
 import Form from '../src/components/form/Form';
 import axios from "axios";
 import * as cheerio from "cheerio";
-import {Grid, Paper} from "@mui/material";
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import {styled} from "@mui/material/styles";
 import Nav from "../src/components/Nav";
 import {TextField} from "@material-ui/core";
 import MenuItem from "@mui/material/MenuItem";
 
 const Item = styled(Paper)(({theme}) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#a3a3a3',
+    backgroundColor: 'pink',
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
+    // color: 'pink'
 }));
 
 export default function Index(props) {
@@ -36,19 +37,7 @@ export default function Index(props) {
                 {/*</Grid>*/}
                 <Grid item xs={12} sm={12} md={12}>
                     <Item sx={{height: "79vh"}}>
-                        <Box
-                            height="100%"
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                        >
-                            <Box
-                                backgroundColor='#f7f7f8'
-                                padding="10%"
-                            >
                         <Form {...props}/>
-                            </Box>
-                        </Box>
                     </Item>
                 </Grid>
                 <Grid item xs={12} md={12}>
@@ -62,16 +51,25 @@ export default function Index(props) {
 
 export async function getStaticProps() {
     // Scrape the names of museums from the museum pass page
-    console.log('Museum name scraping from https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON');
+    console.log('Museum name scraping from https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=1');
     const museumNames = [];
-    const {data} = await axios.get('https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON');
+    const {data} = await axios.get('https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=1');
     const $ = cheerio.load(data);
-    const foo = $('#sel1\\ curKey1').find('option');
+    const foo = $('.pr_container_left').filter((i, el) => {
+        var button = $(el).find('button[onClick*="8/7/2022"]');
+        if (/\s*Request\s*Pass\s*/gi.test(button.text())) {
+            var nameButton = $(el).find('input[type="button"]');
+            console.log(nameButton.val().substring(0, nameButton.val().indexOf('(')));
+        }
+    });
+    // const foo = $('.pr_container_left:contains("Request Pass")').find('button[onClick*="8/7/2022"]').closest('.bs-example');
+    // const bar = foo.find('button');
+    console.log(foo.length);
+    const names = $('#sel1\\ curKey1').find('option');
     const lastScraped = new Date().toISOString();
-    foo.each((i, option) => {
+    names.each((i, option) => {
         if ($(option).text() !== "All Passes") {
-            museumNames.push($(option).text());
-            console.log($(option).text());
+            museumNames.push($(option).text().toString().split('(')[0]);
         }
     });
     console.log('Museum name scraping complete');
