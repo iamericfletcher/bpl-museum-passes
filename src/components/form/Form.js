@@ -5,7 +5,6 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import TextField from "@material-ui/core/TextField";
-
 import Box from "@mui/material/Box";
 import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
@@ -15,6 +14,10 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {isMoment} from "moment";
 import { getPlaces } from "../../../utils/Utils";
+import moment from "moment";
+import dayjs from "dayjs";
+import * as cheerio from "cheerio";
+import str from "assert";
 
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
@@ -31,16 +34,13 @@ const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
         />
     );
 });
-
 TextMaskCustom.propTypes = {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
 };
-
 const Form = (props) => {
-
-    const museums = [];
-
+    const dayjs = require('dayjs')
+    console.log(props.museumsWithPasses);
     const defaultValues = {
         date: null,
         tickets: "",
@@ -48,18 +48,20 @@ const Form = (props) => {
         email: "",
         phone: "",
     };
-
     const [formValues, setFormValues] = useState(defaultValues);
-
+    // function for setting the maxDate for DatePicker
+    const setMaxDate = (daysToAdd) => {
+        const now = new Date()
+        const nowPlusDays = now.setDate(now.getDate() + daysToAdd)
+        return moment(dayjs(nowPlusDays).format('YYYY-MM-DD'))
+    }
     const handleInputChange = (event) => {
+        // Used for the date picker
         if (isMoment(event)) {
             setFormValues({
                 ...formValues,
                 date: event.format('YYYY-MM-DD'),
             });
-
-            getPlaces(props);
-
         } else if (!isMoment(event)) {
             setFormValues({
                 ...formValues,
@@ -67,13 +69,10 @@ const Form = (props) => {
             });
         }
     };
-
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log(formValues);
     };
-
-
     return (
         <Box
             alignItems="center"
@@ -90,33 +89,16 @@ const Form = (props) => {
                     <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DatePicker
                             label="Date of Visit"
+                            maxDate={setMaxDate(59)}
                             name="date"
                             renderInput={(params) =>
-                                <TextField {...params} style={{width: 250}}/>
+                                <TextField {...params} style={{width: 380}}/>
                             }
                             value={formValues.date}
+                            disablePast
                             onChange={handleInputChange}
                         />
                     </LocalizationProvider>
-                </div>
-                <div>
-                    <FormControl sx={{width: 250}} variant="standard">
-                        <InputLabel id="number-of-tickets-select">Number of Tickets</InputLabel>
-                        <Select
-                            id="number-of-tickets-select"
-                            label="Tickets"
-                            labelId="number-of-tickets-select"
-                            name="tickets"
-                            sx={{textAlign: 'left'}}
-                            value={formValues.tickets}
-                            onChange={handleInputChange}
-                        >
-                            <MenuItem value={1}>1</MenuItem>
-                            <MenuItem value={2}>2</MenuItem>
-                            <MenuItem value={3}>3</MenuItem>
-                            <MenuItem value={4}>4</MenuItem>
-                        </Select>
-                    </FormControl>
                 </div>
                 <div>
                     <FormControl variant="standard">
@@ -126,12 +108,12 @@ const Form = (props) => {
                             label="Museum"
                             labelId="museum-select"
                             name="museum"
-                            style={{width: 250, textAlign: 'left'}}
+                            style={{width: 380, textAlign: 'left'}}
                             value={formValues.museum}
                             variant="standard"
                             onChange={handleInputChange}
                         >
-                            {props.museumNames.map((option) => (
+                            {props.museumNamesForSelectField.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
                                 </MenuItem>
@@ -144,7 +126,7 @@ const Form = (props) => {
                         id="email"
                         label="Email"
                         name="email"
-                        style={{width: 250}}
+                        style={{width: 380}}
                         type="email"
                         value={formValues.email}
                         variant="standard"
@@ -157,7 +139,7 @@ const Form = (props) => {
                         id="formatted-phone-input"
                         inputComponent={TextMaskCustom}
                         name="phone"
-                        style={{width: 250}}
+                        style={{width: 380}}
                         value={formValues.phone}
                         onChange={handleInputChange}
                     />
