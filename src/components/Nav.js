@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 class Nav extends Component {
     render() {
         return (
-                <div>Navigation Top</div>
+                <div>Navigation Top!!!</div>
         );
     }
 }
