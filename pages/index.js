@@ -57,7 +57,7 @@ export async function getStaticProps() {
   // Query HTML for names of the museums to use in the select menu
   const names = $("#sel1\\ curKey1").find("option");
   names.each((i, option) => {
-    if ($(option).text() !== "All Passes") {
+    if ($(option).text() !== "All Passes" && $(option).text() !== "Old Sturbridge Village") {
       // Format the names of the museum to be used in the select menu in the browser
       museumNamesForSelectField.push($(option).text().toString().split("(")[0]);
       // Add the names of the museums to be iterated over in below loops
@@ -69,7 +69,7 @@ export async function getStaticProps() {
   const scrapeSequentially = async () => {
     for (let i = 0; i < museumNamesForScraping.length; i++) {
       const res = await fetch(
-        "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=1&curKey2=AVA&curKey1=" +
+        "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=30&curKey2=AVA&curKey1=" +
           museumNamesForScraping[i]
       )
         .then(await delay())

@@ -65,7 +65,8 @@ const Form = (props) => {
     };
     const [formValues, setFormValues] = useState(defaultValues);
     const [dateOrMuseumClicked, setDateOrMuseumClicked] = useState(false);
-    const [expanded, setExpanded] = React.useState(false);;
+    const [expanded, setExpanded] = React.useState(false);
+    const [numPasses, setNumPasses] = useState("");
     // function for setting the maxDate for DatePicker
     const setMaxDate = (daysToAdd) => {
         const now = new Date()
@@ -92,8 +93,8 @@ const Form = (props) => {
                 console.log("dateOrMuseumClicked: ", dateOrMuseumClicked)
                 console.log("Museum changed to: " + event.target.value)
                 console.log("Date of Visit: " + formValues.date)
-                console.log(props.museumObj[event.target.value.toString()][formValues.date])
-
+                // console.log(props.museumObj[event.target.value.toString()][formValues.date])
+                setNumPasses(props.museumObj[event.target.value.toString()][formValues.date])
             }
         }
     };
@@ -194,7 +195,11 @@ const Form = (props) => {
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
                     <Typography>
-                        Current Number of Passes Available: {props.museumObj[formValues.museum][formValues.date] !== undefined ? props.museumObj[formValues.museum][formValues.date] : 0}
+                        Total Number of Passes Available: {
+                        numPasses > 0 ? numPasses : "0"
+                            // props.museumObj[formValues.museum][formValues.date]
+                        // props.museumObj[formValues.museum][formValues.date] !== undefined ? props.museumObj[formValues.museum][formValues.date] : "No Passes Available"
+                    }
                     </Typography>
                 </CardContent>
                 <CardContent>
