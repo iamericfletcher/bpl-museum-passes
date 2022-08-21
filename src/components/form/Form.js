@@ -65,16 +65,7 @@ const Form = (props) => {
     };
     const [formValues, setFormValues] = useState(defaultValues);
     const [dateOrMuseumClicked, setDateOrMuseumClicked] = useState(false);
-    const [expanded, setExpanded] = React.useState(false);
-    const useStyles = makeStyles(theme => ({
-        cardRootStyle: {
-            minHeight: 300,
-            maxHeight: 300
-        },
-        cardMediaStyle: {
-            paddingTop: "50%"
-        }
-    }));
+    const [expanded, setExpanded] = React.useState(false);;
     // function for setting the maxDate for DatePicker
     const setMaxDate = (daysToAdd) => {
         const now = new Date()
@@ -201,6 +192,11 @@ const Form = (props) => {
                 </ExpandMore>
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardContent>
+                    <Typography>
+                        Current Number of Passes Available: {props.museumObj[formValues.museum][formValues.date] !== undefined ? props.museumObj[formValues.museum][formValues.date] : 0}
+                    </Typography>
+                </CardContent>
                 <CardContent>
                     <div>
                         <TextField
