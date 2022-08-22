@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
 import {IMaskInput} from "react-imask";
-import PropTypes from "prop-types";
+import PropTypes, {number} from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {isMoment} from "moment";
@@ -58,7 +58,7 @@ const Form = (props) => {
     console.log(props.museumObj)
     const defaultValues = {
         date: null,
-        tickets: "",
+        initialNumPasses: "",
         museum: "",
         email: "",
         phone: "",
@@ -67,6 +67,8 @@ const Form = (props) => {
     const [dateOrMuseumClicked, setDateOrMuseumClicked] = useState(false);
     const [expanded, setExpanded] = React.useState(false);
     const [numPasses, setNumPasses] = useState("");
+    const [nameForURL, setNameForURL] = useState("");
+    const [dateForURL, setDateForURL] = useState("");
     // function for setting the maxDate for DatePicker
     const setMaxDate = (daysToAdd) => {
         const now = new Date()
@@ -76,291 +78,270 @@ const Form = (props) => {
     const handleInputChange = (event) => {
         // Used for the date picker
         if (isMoment(event)) {
-            setFormValues({
-                ...formValues,
-                // date: event.format('MM-DD-YYYY'),
-                date: event.format('YYYY-MM-DD'),
-            });
-            setDateOrMuseumClicked(!dateOrMuseumClicked)
-            console.log("dateOrMuseumClicked: ", dateOrMuseumClicked)
-        } else if (!isMoment(event)) {
+            console.log("isMoment")
+            if (props.museumObj[formValues.museum][event.format('YYYY-MM-DD')] === undefined) {
+                formValues.date = event.format('YYYY-MM-DD');
+                formValues.initialNumPasses = "0";
+            } else {
+                formValues.date = event.format('YYYY-MM-DD');
+                formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
+            }
+            //     console.log("isMoment and museum is not empty")
+            //     setNumPasses(props.museumObj[formValues.museum][event.format('YYYY-MM-DD')])
+            //     // formValues.initialNumPasses = numPasses;
+            //     if (numPasses === undefined || numPasses === "") {
+            //         console.log("numPasses is undefined or empty")
+            //         setFormValues({
+            //             ...formValues,
+            //             initialNumPasses: "0",
+            //         });
+            //     }
+            //     if (numPasses !== undefined)
+            //     setFormValues({
+            //         ...formValues,
+            //         initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')],
+            //     });
+            // }
+            // if (formValues.initialNumPasses !== "0") {
+            //     setFormValues({
+            //         ...formValues,
+            //         date: event.format('YYYY-MM-DD'),
+            //         initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]
+            //     });
+            // }
+            // setFormValues({
+            //     ...formValues,
+            //     date: event.format('YYYY-MM-DD'),
+            //     initialNumPasses: 0,
+            //     // initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]
+            // });
+            console.log("formValue.initalNumPasses: " + formValues.initialNumPasses)
+            // console.log(props.museumObj[formValues.museum][event.format('YYYY-MM-DD')])
+            setDateForURL(event.format('MM/DD/YYYY'))
+        } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
+            console.log("is not moment && event !== null")
+            formValues.museum = event.target.value;
+            if(event.target.name === "museum") {
+                console.log("event.target.name === museum")
+                // setNumPasses(props.museumObj[event.target.value.toString()][formValues.date])
+                // if (numPasses === undefined || numPasses === "") {
+                // if (props.museumObj[event.target.value.toString()][formValues.date] === undefined || props.museumObj[event.target.value.toString()][formValues.date] === "") {
+                // if (formValues.date !== null) {
+                //
+                // }
+                if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
+                    formValues.initialNumPasses = "0";
+                    // formValues.museum = event.target.value;
+                    // setFormValues({
+                    //     ...formValues,
+                    //     initialNumPasses: "0",
+                    //     // museum: event.target.value,
+                    // });
+                } else {
+                    formValues.initialNumPasses = props.museumObj[event.target.value.toString()][formValues.date];
+                    // setFormValues({
+                    //     ...formValues,
+                    //     initialNumPasses: props.museumObj[event.target.value.toString()][formValues.date],
+                    //     // museum: event.target.value,
+                    // });
+                }
+                console.log("formValue.initalNumPasses: " + formValues.initialNumPasses)
+                // formValues.initialNumPasses = numPasses;
+                // Museum names for select drop down have had additional information after the name removed
+                // For the URL to work, we need to add back the information after the name
+                // e.g. Boston Children's Museum -> Boston Children's Museum (e-ticket)
+                // e.g. Museum of Fine Arts -> Museum of Fine Arts (e-voucher)
+                for (let i = 0; i < props.museumNamesForScraping.length; i++) {
+                    console.log("entered for loop")
+                    if (props.museumNamesForScraping[i].toString().split("(")[0] === event.target.value) {
+                        setNameForURL(props.museumNamesForScraping[i].toString())
+                    }
+                }
+            }
+        } else {
             setFormValues({
                 ...formValues,
                 [event.target.name]: event.target.value,
+                // email: event.target.value,
+                // phone: event.target.value,
             });
-            if(event.target.name === "museum") {
-                setDateOrMuseumClicked(!dateOrMuseumClicked)
-                console.log("dateOrMuseumClicked: ", dateOrMuseumClicked)
-                console.log("Museum changed to: " + event.target.value)
-                console.log("Date of Visit: " + formValues.date)
-                // console.log(props.museumObj[event.target.value.toString()][formValues.date])
-                setNumPasses(props.museumObj[event.target.value.toString()][formValues.date])
-            }
         }
     };
     const handleExpandClick = () => {
         setExpanded(!expanded);
+        if (!expanded) {
+            setFormValues({
+                ...formValues,
+                email: "",
+                phone: "",
+            });
+        }
     }
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log(formValues);
+        // setFormValues({
+        //     ...formValues,
+        //     initialNumPasses: props.museumObj[formValues.museum][formValues.date],
+        //     // museum: event.target.value,
+        // });
     };
     return (
-      <Box
-        alignItems="center"
-        display="flex"
-        height="100%"
-        justifyContent="center"
-        style={{ border: "1px solid black" }}
-        component="form"
-        onSubmit={handleSubmit}
-      >
-        <Card
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          style={{ maxWidth: 450, minHeight: 350 }}
+        <Box
+            alignItems="center"
+            display="flex"
+            height="100%"
+            justifyContent="center"
+            // style={{ border: "1px solid black" }}
+            component="form"
+            onSubmit={handleSubmit}
         >
-          <CardHeader
-            title="Boston Public Library"
-            subheader="Museum Pass Notifier"
-          />
-          <CardMedia
-            // style={{masx: "300px"}}
-            // className={styles.cardMediaStyle}
-            // style={styles.media}
-            // media=""
-            height="200"
-            component="img"
-            image="/futuristic-ga407d83ce_640.png"
-          />
-            <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                    Select the date of your visit and the museum.
-                    Then you will see how many current tickets are available for that museum.
-                    If you would like to be notified when the next pass becomes available,
-                    simply enter your email address and/or phone number.
-                </Typography>
-            </CardContent>
-            <div>
-                <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DatePicker
-                        label="Date of Visit"
-                        maxDate={setMaxDate(59)}
-                        name="date"
-                        renderInput={(params) => (
-                            <TextField {...params} style={{ width: 380 }} />
-                        )}
-                        value={formValues.date}
-                        disablePast
-                        onChange={handleInputChange}
-                        onOpen={() => {console.log("DatePicker open")}}
-                    />
-                </LocalizationProvider>
-            </div>
-            <div>
-                <FormControl variant="standard">
-                    <InputLabel id="museum-select">Museum</InputLabel>
-                    <Select
-                        id="standard-select-currency"
-                        label="Museum"
-                        labelId="museum-select"
-                        name="museum"
-                        style={{ width: 380, textAlign: "left" }}
-                        value={formValues.museum}
-                        variant="standard"
-                        onChange={handleInputChange}
-                        onOpen={() => {console.log("Museum Select open")}}
-                    >
-                        {props.museumNamesForSelectField.map((option) => (
-                            <MenuItem key={option} value={option}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </div>
-            {/*<div>*/}
-            <CardActions disableSpacing>
-                <ExpandMore
-                    exapnded={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                <ExpandMoreIcon
+            <Card
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                style={{ maxWidth: 450, minHeight: 350 }}
+            >
+                <CardHeader
+                    title="Boston Public Library"
+                    subheader="Museum Pass Notifier"
                 />
-                </ExpandMore>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardMedia
+                    height="200"
+                    component="img"
+                    image="/futuristic-ga407d83ce_640.png"
+                />
                 <CardContent>
-                    <Typography>
-                        Total Number of Passes Available: {
-                        numPasses > 0 ? numPasses : "0"
-                            // props.museumObj[formValues.museum][formValues.date]
-                        // props.museumObj[formValues.museum][formValues.date] !== undefined ? props.museumObj[formValues.museum][formValues.date] : "No Passes Available"
-                    }
+                    <Typography variant="body2" color="text.secondary">
+                        Select the date of your visit and the museum.
+                        Then you will see how many current tickets are available for that museum.
+                        If you would like to be notified when the next pass becomes available,
+                        simply enter your email address and/or phone number.
                     </Typography>
                 </CardContent>
-                <CardContent>
-                    <div>
-                        <TextField
-                            id="email"
-                            label="Email"
-                            name="email"
-                            style={{ width: 300 }}
-                            type="email"
-                            value={formValues.email}
+                <div>
+                    <FormControl variant="standard">
+                        <InputLabel id="museum-select">Museum</InputLabel>
+                        <Select
+                            id="standard-select-currency"
+                            label="Museum"
+                            labelId="museum-select"
+                            name="museum"
+                            style={{ width: 380, textAlign: "left" }}
+                            value={formValues.museum}
                             variant="standard"
                             onChange={handleInputChange}
+                            onOpen={() => {console.log("Museum Select open")}}
+                        >
+                            {props.museumNamesForSelectField.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </div>
+                <div>
+                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DatePicker
+                            label="Date of Visit"
+                            maxDate={setMaxDate(59)}
+                            name="date"
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    style={{ width: 380 }}
+                                    // Prevent user from typing in a date
+                                    // Helps with initial prompt to user to select a date and museum
+                                    onKeyDown={e => e.preventDefault()}/>
+                            )}
+                            value={formValues.date}
+                            disablePast
+                            onChange={handleInputChange}
+                            disabled={formValues.museum === ""}
                         />
-                        <FormControl variant="standard">
-                            <InputLabel htmlFor="formatted-phone-input">
-                                Phone
-                            </InputLabel>
-                            <Input
-                                id="formatted-phone-input"
-                                inputComponent={TextMaskCustom}
-                                name="phone"
+                    </LocalizationProvider>
+                </div>
+                <CardContent>
+                    <Typography
+                        style={{textAlign: 'center'}}
+                        hidden={formValues.date === null || formValues.date === "" || formValues.museum === ""}
+                    >
+                        Total Number of Passes Available: {
+                        formValues.initialNumPasses
+                        // numPasses !== undefined ? numPasses : "0"
+                    }
+                    </Typography>
+                    <Typography
+                        style={{textAlign: 'center'}}
+                        hidden={formValues.date !== null && formValues.date !== "" && formValues.museum !== ""}
+
+                    >
+                        Please select a date of visit and museum.
+                    </Typography>
+                </CardContent>
+                <Button
+                    color="primary"
+                    type="button"
+                    href={"https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=30&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL}
+                    target="_blank"
+                    variant="contained"
+                    disabled={numPasses === undefined || numPasses === ""}
+                >
+                    Reserve Pass
+                </Button>
+                <br/><br/>
+                <Button
+                    color="primary"
+                    type="button"
+                    variant="contained"
+                    onClick={handleExpandClick}
+                    disabled={formValues.date === null || formValues.date === "" || formValues.museum === ""}
+                >
+                    Notify Me
+                </Button>
+                <CardActions disableSpacing>
+                </CardActions>
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <CardContent>
+                        <Typography>
+                            Enter your email address and/or phone number to be notified when the next pass becomes available.
+                        </Typography>
+                        <div>
+                            <TextField
+                                id="email"
+                                label="Email"
+                                name="email"
                                 style={{ width: 300 }}
-                                value={formValues.phone}
+                                type="email"
+                                value={formValues.email}
+                                variant="standard"
                                 onChange={handleInputChange}
                             />
-                        </FormControl>
-                    </div>
-                    {/*<Typography paragraph>Method:</Typography>*/}
-                    {/*<Typography paragraph>*/}
-                    {/*    Heat 1/2 cup of the broth in a pot until simmering, add saffron and set*/}
-                    {/*    aside for 10 minutes.*/}
-                    {/*</Typography>*/}
-                    {/*<Typography paragraph>*/}
-                    {/*    Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over*/}
-                    {/*    medium-high heat. Add chicken, shrimp and chorizo, and cook, stirring*/}
-                    {/*    occasionally until lightly browned, 6 to 8 minutes. Transfer shrimp to a*/}
-                    {/*    large plate and set aside, leaving chicken and chorizo in the pan. Add*/}
-                    {/*    pimentón, bay leaves, garlic, tomatoes, onion, salt and pepper, and cook,*/}
-                    {/*    stirring often until thickened and fragrant, about 10 minutes. Add*/}
-                    {/*    saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.*/}
-                    {/*</Typography>*/}
-                </CardContent>
-            </Collapse>
-          {/*    <Box*/}
-          {/*        component="form"*/}
-          {/*        padding="10%"*/}
-          {/*        onSubmit={handleSubmit}*/}
-          {/*        style={{border: "1px solid black"}}*/}
-          {/*    >*/}
-          {/*<div>*/}
-          {/*  <LocalizationProvider dateAdapter={AdapterMoment}>*/}
-          {/*    <DatePicker*/}
-          {/*      label="Date of Visit"*/}
-          {/*      maxDate={setMaxDate(59)}*/}
-          {/*      name="date"*/}
-          {/*      renderInput={(params) => (*/}
-          {/*        <TextField {...params} style={{ width: 380 }} />*/}
-          {/*      )}*/}
-          {/*      value={formValues.date}*/}
-          {/*      disablePast*/}
-          {/*      onChange={handleInputChange}*/}
-          {/*    />*/}
-          {/*  </LocalizationProvider>*/}
-          {/*</div>*/}
-          {/*<div>*/}
-          {/*  <FormControl variant="standard">*/}
-          {/*    <InputLabel id="museum-select">Museum</InputLabel>*/}
-          {/*    <Select*/}
-          {/*      id="standard-select-currency"*/}
-          {/*      label="Museum"*/}
-          {/*      labelId="museum-select"*/}
-          {/*      name="museum"*/}
-          {/*      style={{ width: 380, textAlign: "left" }}*/}
-          {/*      value={formValues.museum}*/}
-          {/*      variant="standard"*/}
-          {/*      onChange={handleInputChange}*/}
-          {/*    >*/}
-          {/*      {props.museumNamesForSelectField.map((option) => (*/}
-          {/*        <MenuItem key={option} value={option}>*/}
-          {/*          {option}*/}
-          {/*        </MenuItem>*/}
-          {/*      ))}*/}
-          {/*    </Select>*/}
-          {/*  </FormControl>*/}
-          {/*</div>*/}
-          {/*<div>*/}
-          {/*  <Accordion style={{ width: 380, alignContent: "center" }}>*/}
-          {/*    <AccordionSummary*/}
-          {/*      expandIcon={<ExpandMoreIcon />}*/}
-          {/*      aria-controls="panel1a-content"*/}
-          {/*      id="panel1a-header"*/}
-          {/*      style={{}}*/}
-          {/*    >*/}
-          {/*      /!*<Typography>Select Date of Visit and Museum</Typography>*!/*/}
-          {/*    </AccordionSummary>*/}
-          {/*    <AccordionDetails style={{}}>*/}
-          {/*      /!*<div>*!/*/}
-          {/*      /!*  <TextField*!/*/}
-          {/*      /!*    id="email"*!/*/}
-          {/*      /!*    label="Email"*!/*/}
-          {/*      /!*    name="email"*!/*/}
-          {/*      /!*    style={{ width: 300 }}*!/*/}
-          {/*      /!*    type="email"*!/*/}
-          {/*      /!*    value={formValues.email}*!/*/}
-          {/*      /!*    variant="standard"*!/*/}
-          {/*      /!*    onChange={handleInputChange}*!/*/}
-          {/*      /!*  />*!/*/}
-          {/*      /!*  <FormControl variant="standard">*!/*/}
-          {/*      /!*    <InputLabel htmlFor="formatted-phone-input">*!/*/}
-          {/*      /!*      Phone*!/*/}
-          {/*      /!*    </InputLabel>*!/*/}
-          {/*      /!*    <Input*!/*/}
-          {/*      /!*      id="formatted-phone-input"*!/*/}
-          {/*      /!*      inputComponent={TextMaskCustom}*!/*/}
-          {/*      /!*      name="phone"*!/*/}
-          {/*      /!*      style={{ width: 300 }}*!/*/}
-          {/*      /!*      value={formValues.phone}*!/*/}
-          {/*      /!*      onChange={handleInputChange}*!/*/}
-          {/*      /!*    />*!/*/}
-          {/*      /!*  </FormControl>*!/*/}
-          {/*      /!*</div>*!/*/}
-          {/*    </AccordionDetails>*/}
-          {/*  </Accordion>*/}
-          {/*</div>*/}
-          {/*/!*<div>*!/*/}
-          {/*/!*    <TextField*!/*/}
-          {/*/!*        id="email"*!/*/}
-          {/*/!*        label="Email"*!/*/}
-          {/*/!*        name="email"*!/*/}
-          {/*/!*        style={{width: 380}}*!/*/}
-          {/*/!*        type="email"*!/*/}
-          {/*/!*        value={formValues.email}*!/*/}
-          {/*/!*        variant="standard"*!/*/}
-          {/*/!*        onChange={handleInputChange}*!/*/}
-          {/*/!*    />*!/*/}
-          {/*/!*</div>*!/*/}
-          {/*/!*<FormControl variant="standard">*!/*/}
-          {/*/!*    <InputLabel htmlFor="formatted-phone-input">Phone</InputLabel>*!/*/}
-          {/*/!*    <Input*!/*/}
-          {/*/!*        id="formatted-phone-input"*!/*/}
-          {/*/!*        inputComponent={TextMaskCustom}*!/*/}
-          {/*/!*        name="phone"*!/*/}
-          {/*/!*        style={{width: 380}}*!/*/}
-          {/*/!*        value={formValues.phone}*!/*/}
-          {/*/!*        onChange={handleInputChange}*!/*/}
-          {/*/!*    />*!/*/}
-          {/*/!*</FormControl>*!/*/}
-          <br />
-          <br />
-          <Button color="primary" type="submit" variant="contained">
-            Submit
-          </Button>
-          <br />
-          <br />
-          <div>Last scraped: {props.lastScraped}</div>
-          {/*    </Box>*/}
-        </Card>
-      </Box>
+                            <FormControl variant="standard">
+                                <InputLabel htmlFor="formatted-phone-input">
+                                    Phone
+                                </InputLabel>
+                                <Input
+                                    id="formatted-phone-input"
+                                    inputComponent={TextMaskCustom}
+                                    name="phone"
+                                    style={{ width: 300 }}
+                                    value={formValues.phone}
+                                    onChange={handleInputChange}
+                                />
+                            </FormControl>
+                        </div>
+                        <br/><br/>
+                        <Button color="primary" type="submit" variant="contained">
+                            Submit
+                        </Button>
+                    </CardContent>
+                </Collapse>
+                <div>Last scraped: {props.lastScraped}</div>
+            </Card>
+        </Box>
     );
-
 };
 
 export default Form;

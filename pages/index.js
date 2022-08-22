@@ -126,6 +126,7 @@ export async function getStaticProps() {
     props: {
       lastScraped: lastScraped,
       museumNamesForSelectField: museumNamesForSelectField,
+      museumNamesForScraping: museumNamesForScraping,
       museumObj: museumObj,
     },
     revalidate: 40,
