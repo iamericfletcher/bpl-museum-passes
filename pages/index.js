@@ -8,36 +8,36 @@ import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Nav from "../src/components/Nav";
 import moment from "moment";
+import Container from "@mui/material/Container";
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "pink",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  // color: 'pink'
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//   backgroundColor: "pink",
+//   ...theme.typography.body2,
+//   padding: theme.spacing(1),
+//   textAlign: "center",
+//   height: "100%"
+//   // color: 'pink'
+// }));
 export default function Index(props) {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={12}>
-          <Item sx={{ height: "9vh" }}>
-            <Nav />
-          </Item>
-        </Grid>
-        {/*<Grid item xs={12} sm={6} md={6}>*/}
-        {/*    <Item sx={{height: "79vh"}}>About</Item>*/}
-        {/*</Grid>*/}
-        <Grid item xs={12} sm={12} md={12}>
-          <Item sx={{ minHeight: "79vh" }}>
+    <Container
+        sx={{
+          backgroundColor:"#fde2e4",
+          // ...theme.typography.body2,
+          // padding: theme.spacing(1),
+          padding: 1,
+          textAlign: "center",
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+          // flexGrow: 1
+    }}
+    >
+          {/*<Item>*/}
             <Form {...props} />
-          </Item>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <Item sx={{ height: "9vh" }}>Footer Bottom</Item>
-        </Grid>
-      </Grid>
-    </Box>
+          {/*</Item>*/}
+    </Container>
   );
 }
 
@@ -69,7 +69,7 @@ export async function getStaticProps() {
   const scrapeSequentially = async () => {
     for (let i = 0; i < museumNamesForScraping.length; i++) {
       const res = await fetch(
-        "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=30&curKey2=AVA&curKey1=" +
+        "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" +
           museumNamesForScraping[i]
       )
         .then(await delay())

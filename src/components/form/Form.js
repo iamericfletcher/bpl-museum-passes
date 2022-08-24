@@ -192,7 +192,8 @@ const Form = (props) => {
             display="flex"
             height="100%"
             justifyContent="center"
-            // style={{ border: "1px solid black" }}
+            // style={{ heigh:z}}
+            // style={{backgroundColor: 'black'}}
             component="form"
             onSubmit={handleSubmit}
         >
@@ -200,7 +201,8 @@ const Form = (props) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                style={{ maxWidth: 450, minHeight: 350 }}
+                style={{ maxWidth: 450, minHeight: 350, backgroundColor: "#FCF6BD"}}
+                // variant="outlined"
             >
                 <CardHeader
                     title="Boston Public Library"
@@ -250,6 +252,7 @@ const Form = (props) => {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
+                                    // inputProps={{style: { textAlign: 'center' }}}
                                     style={{ width: 380 }}
                                     // Prevent user from typing in a date
                                     // Helps with initial prompt to user to select a date and museum
@@ -259,6 +262,8 @@ const Form = (props) => {
                             disablePast
                             onChange={handleInputChange}
                             disabled={formValues.museum === ""}
+                            // inputProps={{style: { textAlign: 'center' }}}
+
                         />
                     </LocalizationProvider>
                 </div>
@@ -283,10 +288,10 @@ const Form = (props) => {
                 <Button
                     color="primary"
                     type="button"
-                    href={"https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=30&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL}
+                    href={"https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL}
                     target="_blank"
                     variant="contained"
-                    disabled={numPasses === undefined || numPasses === ""}
+                    disabled={formValues.initialNumPasses === "0" || formValues.initialNumPasses === ""}
                 >
                     Reserve Pass
                 </Button>
@@ -333,7 +338,12 @@ const Form = (props) => {
                             </FormControl>
                         </div>
                         <br/><br/>
-                        <Button color="primary" type="submit" variant="contained">
+                        <Button
+                            color="primary"
+                            type="submit"
+                            variant="contained"
+                            disabled={formValues.email === "" && formValues.phone === ""}
+                        >
                             Submit
                         </Button>
                     </CardContent>
