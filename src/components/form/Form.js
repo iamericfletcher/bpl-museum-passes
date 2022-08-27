@@ -201,12 +201,12 @@ const Form = (props) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                style={{ maxWidth: 450, minHeight: 350, backgroundColor: "#FCF6BD"}}
-                // variant="outlined"
+                style={{ maxWidth: 450, minHeight: 350, backgroundColor: "#FFFFFF"}}
+                variant="outlined"
             >
                 <CardHeader
                     title="Boston Public Library"
-                    subheader="Museum Pass Notifier"
+                    subheader={<Typography sx={{color: 'black',}}>Museum Pass Notifier</Typography>}
                 />
                 <CardMedia
                     height="200"
@@ -214,11 +214,22 @@ const Form = (props) => {
                     image="/futuristic-ga407d83ce_640.png"
                 />
                 <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                        Select the date of your visit and the museum.
-                        Then you will see how many current tickets are available for that museum.
-                        If you would like to be notified when the next pass becomes available,
-                        simply enter your email address and/or phone number.
+                    <Typography variant="body2" color="black" fontSize={15}>
+                        Select the museum name and date of visit
+                        <br/>
+                        <br/>
+                        <b>If passes are available:</b>
+                        <br/>
+                        Click <b>Reserve Pass</b> to reserve a pass
+                        <br/>
+                        -or-
+                        <br/>
+                        Click <b>Notify Me</b> to receive a notification when the next pass is available
+                        <br/>
+                        <br/>
+                        <b>If no passes are available:</b>
+                        <br/>
+                        Click <b>Notify Me</b> to receive a notification when the next pass is available
                     </Typography>
                 </CardContent>
                 <div>
@@ -309,7 +320,7 @@ const Form = (props) => {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <Typography>
+                        <Typography variant={"body2"} color={"black"} fontSize={15}>
                             Enter your email address and/or phone number to be notified when the next pass becomes available.
                         </Typography>
                         <div>
@@ -348,7 +359,11 @@ const Form = (props) => {
                         </Button>
                     </CardContent>
                 </Collapse>
-                <div>Last scraped: {props.lastScraped}</div>
+                <div>
+                    <Typography fontSize={12}>
+                        Last scraped: {props.lastScraped}
+                    </Typography>
+                </div>
             </Card>
         </Box>
     );

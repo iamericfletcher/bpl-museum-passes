@@ -22,12 +22,13 @@ export default function Index(props) {
   return (
     <Container
         sx={{
-          backgroundColor:"#fde2e4",
+          backgroundColor:"#f8edeb",
           // ...theme.typography.body2,
           // padding: theme.spacing(1),
           padding: 1,
           textAlign: "center",
           minHeight: "100vh",
+          minWidth: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center"
@@ -45,7 +46,6 @@ export async function getStaticProps() {
   console.log("getStaticProps initialized");
   const museumNamesForSelectField = [];
   const museumNamesForScraping = [];
-  // NEED TO INSERT OBJECT FOR STORING THE SCRAPED DATA
   const museumObj = {};
 
   const { data } = await axios.get(
