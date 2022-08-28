@@ -88,68 +88,17 @@ const Form = (props) => {
                 formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
             }
-            //     console.log("isMoment and museum is not empty")
-            //     setNumPasses(props.museumObj[formValues.museum][event.format('YYYY-MM-DD')])
-            //     // formValues.initialNumPasses = numPasses;
-            //     if (numPasses === undefined || numPasses === "") {
-            //         console.log("numPasses is undefined or empty")
-            //         setFormValues({
-            //             ...formValues,
-            //             initialNumPasses: "0",
-            //         });
-            //     }
-            //     if (numPasses !== undefined)
-            //     setFormValues({
-            //         ...formValues,
-            //         initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')],
-            //     });
-            // }
-            // if (formValues.initialNumPasses !== "0") {
-            //     setFormValues({
-            //         ...formValues,
-            //         date: event.format('YYYY-MM-DD'),
-            //         initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]
-            //     });
-            // }
-            // setFormValues({
-            //     ...formValues,
-            //     date: event.format('YYYY-MM-DD'),
-            //     initialNumPasses: 0,
-            //     // initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]
-            // });
-            console.log("formValue.initalNumPasses: " + formValues.initialNumPasses)
-            // console.log(props.museumObj[formValues.museum][event.format('YYYY-MM-DD')])
             setDateForURL(event.format('MM/DD/YYYY'))
         } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
             console.log("is not moment && event !== null")
             formValues.museum = event.target.value;
             if(event.target.name === "museum") {
                 console.log("event.target.name === museum")
-                // setNumPasses(props.museumObj[event.target.value.toString()][formValues.date])
-                // if (numPasses === undefined || numPasses === "") {
-                // if (props.museumObj[event.target.value.toString()][formValues.date] === undefined || props.museumObj[event.target.value.toString()][formValues.date] === "") {
-                // if (formValues.date !== null) {
-                //
-                // }
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
-                    // formValues.initialNumPasses = "0";
                     formValues.initialNumPasses = 0;
-                    // formValues.museum = event.target.value;
-                    // setFormValues({
-                    //     ...formValues,
-                    //     initialNumPasses: "0",
-                    //     // museum: event.target.value,
-                    // });
                 } else {
                     formValues.initialNumPasses = props.museumObj[event.target.value.toString()][formValues.date];
-                    // setFormValues({
-                    //     ...formValues,
-                    //     initialNumPasses: props.museumObj[event.target.value.toString()][formValues.date],
-                    //     // museum: event.target.value,
-                    // });
                 }
-                console.log("formValue.initalNumPasses: " + formValues.initialNumPasses)
-                // formValues.initialNumPasses = numPasses;
                 // Museum names for select drop down have had additional information after the name removed
                 // For the URL to work, we need to add back the information after the name
                 // e.g. Boston Children's Museum -> Boston Children's Museum (e-ticket)
@@ -216,8 +165,6 @@ const Form = (props) => {
             display="flex"
             height="100%"
             justifyContent="center"
-            // style={{ heigh:z}}
-            // style={{backgroundColor: 'black'}}
             component="form"
             onSubmit={handleSubmit}
         >
@@ -287,7 +234,6 @@ const Form = (props) => {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    // inputProps={{style: { textAlign: 'center' }}}
                                     style={{ width: 380 }}
                                     // Prevent user from typing in a date
                                     // Helps with initial prompt to user to select a date and museum
@@ -297,7 +243,6 @@ const Form = (props) => {
                             disablePast
                             onChange={handleInputChange}
                             disabled={formValues.museum === ""}
-                            // inputProps={{style: { textAlign: 'center' }}}
 
                         />
                     </LocalizationProvider>
@@ -309,7 +254,6 @@ const Form = (props) => {
                     >
                         Total Number of Passes Available: {
                         formValues.initialNumPasses
-                        // numPasses !== undefined ? numPasses : "0"
                     }
                     </Typography>
                     <Typography
