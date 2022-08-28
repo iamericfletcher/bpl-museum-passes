@@ -9,6 +9,15 @@ import { styled } from "@mui/material/styles";
 import Nav from "../src/components/Nav";
 import moment from "moment";
 import Container from "@mui/material/Container";
+// import prisma from '/lib/prisma.js';
+import {PrismaClient} from "@prisma/client";
+
+// import { PrismaClient } from "@prisma/client";
+
+// import prisma from "../lib/prisma.js";
+
+// console.log(prisma)
+
 
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: "pink",
@@ -44,6 +53,8 @@ export default function Index(props) {
 
 export async function getStaticProps() {
   console.log("getStaticProps initialized");
+  const prisma = new PrismaClient();
+  console.log(prisma)
   const museumNamesForSelectField = [];
   const museumNamesForScraping = [];
   const museumObj = {};
@@ -69,7 +80,7 @@ export async function getStaticProps() {
   const scrapeSequentially = async () => {
     for (let i = 0; i < museumNamesForScraping.length; i++) {
       const res = await fetch(
-        "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" +
+        "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=3&curKey2=AVA&curKey1=" +
           museumNamesForScraping[i]
       )
         .then(await delay())

@@ -32,7 +32,9 @@ import {makeStyles} from "@mui/styles";
 import {ExpandMore} from "@mui/icons-material";
 // import classes from "*.module.css";
 // import {} from "../../../public/notification-image.png"
-
+// import { prisma } from '/Users/ericfletcher/WebstormProjects/bpl-museum-passes/lib/prisma.js'
+//
+// console.log(prisma)
 
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
@@ -58,7 +60,7 @@ const Form = (props) => {
     console.log(props.museumObj)
     const defaultValues = {
         date: null,
-        initialNumPasses: "",
+        initialNumPasses: 0,
         museum: "",
         email: "",
         phone: "",
@@ -81,7 +83,7 @@ const Form = (props) => {
             console.log("isMoment")
             if (props.museumObj[formValues.museum][event.format('YYYY-MM-DD')] === undefined) {
                 formValues.date = event.format('YYYY-MM-DD');
-                formValues.initialNumPasses = "0";
+                formValues.initialNumPasses = 0;
             } else {
                 formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
@@ -130,7 +132,8 @@ const Form = (props) => {
                 //
                 // }
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
-                    formValues.initialNumPasses = "0";
+                    // formValues.initialNumPasses = "0";
+                    formValues.initialNumPasses = 0;
                     // formValues.museum = event.target.value;
                     // setFormValues({
                     //     ...formValues,
@@ -177,15 +180,36 @@ const Form = (props) => {
             });
         }
     }
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log(formValues);
-        // setFormValues({
-        //     ...formValues,
-        //     initialNumPasses: props.museumObj[formValues.museum][formValues.date],
-        //     // museum: event.target.value,
-        // });
-    };
+
+    const handleSubmit = async e => {
+        e.preventDefault()
+        try {
+            console.log(formValues);
+            const body = { museum: formValues.museum, dateOfVisit: formValues.date, initialNumPasses: formValues.initialNumPasses, email: formValues.email, phone: formValues.phone };
+            console.log(body);
+            await fetch(`/api/requests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+            // await Router.push('/')
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     console.log(formValues);
+    //
+    //     // saveRequest().then(r => formValues);
+    //     // setFormValues({
+    //     //     ...formValues,
+    //     //     initialNumPasses: props.museumObj[formValues.museum][formValues.date],
+    //     //     // museum: event.target.value,
+    //     // });
+    // };
     return (
         <Box
             alignItems="center"
