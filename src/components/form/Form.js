@@ -9,27 +9,13 @@ import Box from "@mui/material/Box";
 import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
 import {IMaskInput} from "react-imask";
-import PropTypes, {number} from "prop-types";
+import PropTypes from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
-import {isMoment} from "moment";
-import moment from "moment";
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Card,
-    CardActions,
-    CardContent,
-    CardHeader,
-    CardMedia, Collapse
-} from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import moment, {isMoment} from "moment";
+import {Card, CardActions, CardContent, CardHeader, CardMedia, Collapse} from "@mui/material";
 // import notificationImage from "/notification-image.png";
 import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import {makeStyles} from "@mui/styles";
-import {ExpandMore} from "@mui/icons-material";
 // import classes from "*.module.css";
 // import {} from "../../../public/notification-image.png"
 // import { prisma } from '/Users/ericfletcher/WebstormProjects/bpl-museum-passes/lib/prisma.js'
@@ -92,7 +78,7 @@ const Form = (props) => {
         } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
             console.log("is not moment && event !== null")
             formValues.museum = event.target.value;
-            if(event.target.name === "museum") {
+            if (event.target.name === "museum") {
                 console.log("event.target.name === museum")
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
                     formValues.initialNumPasses = 0;
@@ -134,11 +120,17 @@ const Form = (props) => {
         e.preventDefault()
         try {
             console.log(formValues);
-            const body = { museum: formValues.museum, dateOfVisit: formValues.date, initialNumPasses: formValues.initialNumPasses, email: formValues.email, phone: formValues.phone };
+            const body = {
+                museum: formValues.museum,
+                dateOfVisit: formValues.date,
+                initialNumPasses: formValues.initialNumPasses,
+                email: formValues.email,
+                phone: formValues.phone
+            };
             console.log(body);
             await fetch(`/api/requests`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(body),
             })
             // await Router.push('/')
@@ -172,7 +164,7 @@ const Form = (props) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                style={{ maxWidth: 450, minHeight: 350, backgroundColor: "#FFFFFF"}}
+                style={{maxWidth: 450, minHeight: 350, backgroundColor: "#FFFFFF"}}
                 variant="outlined"
             >
                 <CardHeader
@@ -211,11 +203,13 @@ const Form = (props) => {
                             label="Museum"
                             labelId="museum-select"
                             name="museum"
-                            style={{ width: 380, textAlign: "left" }}
+                            style={{width: 320, textAlign: "left"}}
                             value={formValues.museum}
                             variant="standard"
                             onChange={handleInputChange}
-                            onOpen={() => {console.log("Museum Select open")}}
+                            onOpen={() => {
+                                console.log("Museum Select open")
+                            }}
                         >
                             {props.museumNamesForSelectField.map((option) => (
                                 <MenuItem key={option} value={option}>
@@ -234,10 +228,15 @@ const Form = (props) => {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    style={{ width: 380 }}
+                                    style={{width: 320}}
                                     // Prevent user from typing in a date
                                     // Helps with initial prompt to user to select a date and museum
-                                    onKeyDown={e => e.preventDefault()}/>
+                                    onKeyDown={e => {
+                                        if (e.key !== "Tab" || e.key !== "Enter") {
+                                            e.preventDefault()
+                                        }
+                                    }}
+                                />
                             )}
                             value={formValues.date}
                             disablePast
@@ -270,7 +269,7 @@ const Form = (props) => {
                     href={"https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL}
                     target="_blank"
                     variant="contained"
-                    disabled={formValues.initialNumPasses === "0" || formValues.initialNumPasses === ""}
+                    disabled={formValues.initialNumPasses === 0 || formValues.initialNumPasses === ""}
                 >
                     Reserve Pass
                 </Button>
@@ -287,16 +286,18 @@ const Form = (props) => {
                 <CardActions disableSpacing>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent>
-                        <Typography variant={"body2"} color={"black"} fontSize={15}>
-                            Enter your email address and/or phone number to be notified when the next pass becomes available.
+                    <CardContent
+                    >
+                        <Typography >
+                            Enter your email address and/or phone number to be notified when the next pass becomes
+                            available.
                         </Typography>
                         <div>
                             <TextField
                                 id="email"
                                 label="Email"
                                 name="email"
-                                style={{ width: 300 }}
+                                style={{width: 300}}
                                 type="email"
                                 value={formValues.email}
                                 variant="standard"
@@ -310,7 +311,7 @@ const Form = (props) => {
                                     id="formatted-phone-input"
                                     inputComponent={TextMaskCustom}
                                     name="phone"
-                                    style={{ width: 300 }}
+                                    style={{width: 300}}
                                     value={formValues.phone}
                                     onChange={handleInputChange}
                                 />

@@ -43,6 +43,7 @@
     "@wdio/spec-reporter": "^7.20.8",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "moment-timezone": "^0.5.37",
     "prisma": "^4.2.1",
     "prisma-client": "^0.0.0",
     "react-imask": "^6.4.2"
