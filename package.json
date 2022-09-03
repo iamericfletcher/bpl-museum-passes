@@ -27,12 +27,14 @@
     "dayjs": "^1.11.4",
     "debug": "^4.3.4",
     "http-proxy-middleware": "^2.0.6",
+    "mailgun.js": "^8.0.1",
     "moment": "^2.29.4",
     "next": "latest",
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-number-format": "^4.9.3"
+    "react-number-format": "^4.9.3",
+    "twilio": "^3.81.0"
   },
   "devDependencies": {
     "@material-ui/core": "^4.12.4",
@@ -43,6 +45,8 @@
     "@wdio/spec-reporter": "^7.20.8",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "form-data": "^4.0.0",
+    "mailgun-js": "^0.22.0",
     "moment-timezone": "^0.5.37",
     "prisma": "^4.2.1",
     "prisma-client": "^0.0.0",

@@ -12,6 +12,8 @@ import 'moment-timezone';
 import Container from "@mui/material/Container";
 // import prisma from '/lib/prisma.js';
 import {PrismaClient} from "@prisma/client";
+// import {env} from "../.env"
+// import {env} from "eslint-config-next";
 
 // import { PrismaClient } from "@prisma/client";
 
@@ -54,7 +56,30 @@ export default function Index(props) {
 
 export async function getStaticProps() {
   console.log("getStaticProps initialized");
+
+  const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+  const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+  const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+  const mailgun = require("mailgun-js");
+  const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
+  const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
+  const mg = mailgun({apiKey: MAILGUN_API_KEY, domain: MAILGUN_DOMAIN});
+  const data2 = {
+    // from: 'Excited User <me@samples.mailgun.org>',
+    from: `bpl-pass-notification@${MAILGUN_DOMAIN}`,
+    to: 'EricFletcher3@gmail.com',
+    // to: 'bar@example.com, YOU@YOUR_DOMAIN_NAME',
+    subject: 'Museum Pass Notification',
+    text: 'Greetings! This is a notification that a museum pass has become available.\n\n' +
+        'Please visit the link below to reserve this pass.\n\n' +
+        'Note that this is first come first serve, so the quicker you visit the link, the better chances you have of securing the pass!\n\n' +
+        'Sincerely,\n\n' +
+        'Eric Fletcher\n' +
+        'BPL Pass Notification Developer'
+  };
+
   var moment = require('moment-timezone');
+
   const prisma = new PrismaClient();
   const museumNamesForSelectField = [];
   const museumNamesForScraping = [];
@@ -83,8 +108,10 @@ export async function getStaticProps() {
   });
   // Need to create a delay, otherwise the site's server will error out with a 500 status error
   const delay = (ms = 5000) => new Promise((r) => setTimeout(r, ms));
+
   const scrapeSequentially = async () => {
     for (let i = 0; i < museumNamesForScraping.length; i++) {
+
       const res = await fetch(
         "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" +
           museumNamesForScraping[i]
@@ -139,33 +166,15 @@ export async function getStaticProps() {
     }
   };
   await scrapeSequentially();
-
   // get data from prisma database
     const dataFromPrisma = await prisma.request.findMany();
   console.log(dataFromPrisma)
     // iterate over data from prisma database
     for (let i = 0; i < dataFromPrisma.length; i++) {
       // iterate over museumObj
-      // console.log("Museum: " + dataFromPrisma[i].museum);
         for (let j = 0; j < Object.keys(museumObj).length; j++) {
             // if museumObj key matches dataFromPrisma key, update dataFromPrisma value with museumObj value
-          // console.log("Object Key: " + Object.keys(museumObj)[j])
-          // console.log("museumObj count: " + museumObj[Object.keys(museumObj)[j]][dataFromPrisma[i].date])
             if (Object.keys(museumObj)[j] === dataFromPrisma[i].museum) {
-              // console log the values of the museumObj
-              // console.log("todaysDate: " + moment(todaysDate.split(",")[0]).format("YYYY-MM-DD"));
-              // moment(todaysDate).isSameOrBefore(moment(dataFromPrisma[i].date).format("YYYY-MM-DD"));
-              // console.log("todaysDate: " + todaysDate);
-              // console.log(moment(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })))
-                // console.log("Moment dataFromPrisma[i].date: " + moment(dataFromPrisma[i].dateOfVisit, "YYYY-MM-DD"));
-              // console.log("Date() dataFromPrisma[i].date: " + new Date(dataFromPrisma[i].dateOfVisit));
-                // console.log(moment(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })))
-              console.log(moment().endOf('day'))
-              console.log(moment(dataFromPrisma[i].dateOfVisit).endOf('day'))
-              // console.log(moment.tz(dataFromPrisma[i].dateOfVisit, "America/New_York"))
-                moment().endOf('day').isSameOrBefore(moment(dataFromPrisma[i].dateOfVisit).endOf('day')) ? console.log("current date is same or before Prisma date") : console.log("current date is not same or before Prisma date");
-              console.log()
-              console.log()
               // If the current date is +1 over the users date of visit, update the database and remove the row of data
               if (!moment().endOf('day').isSameOrBefore(moment(dataFromPrisma[i].dateOfVisit).endOf('day'))) {
                 const deleteRequest = await prisma.request.delete({
@@ -173,33 +182,30 @@ export async function getStaticProps() {
                     id: dataFromPrisma[i].id
                   }
                 });
+              } else {
+                // Send email and/or mobile phone notification if the current number of passes available is greater
+                // than the initial number of passes available from the database
+                if (museumObj[Object.keys(museumObj)[j]][dataFromPrisma[i].dateOfVisit] !== undefined && dataFromPrisma[i].initialNumPasses < museumObj[Object.keys(museumObj)[j]][dataFromPrisma[i].dateOfVisit]) {
+                  mg.messages().send(data2, function (error, body) {
+                    console.log(body);
+                  });
+                  client.messages
+                      .create({
+                        body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
+                        from: '+18145606408',
+                        to: '+1' + dataFromPrisma[i].phone.trim().replace(/[^0-9]/g, '')
+                      })
+                      .then(message => console.log(message.sid));
+                  const deleteRequest = await prisma.request.delete({
+                    where: {
+                      id: dataFromPrisma[i].id
+                    }
+                  });
+                }
               }
-
-              // moment(todaysDate.split(",")[0]).format("YYYY-MM-DD")
-              // console.log("Pass number in museumObj: " + museumObj[Object.keys(museumObj)[j]][dataFromPrisma[i].dateOfVisit]);
-              // console.log("Pass number in dataFromPrisma: " + dataFromPrisma[i].dateOfVisit);
-              // console.log("Pass number in dataFromPrisma: " + dataFromPrisma[i].initialNumPasses);
-
-              // for ( var key in museumObj[Object.keys(museumObj)[j]]) {
-              //   if (key === dataFromPrisma[i].date) {
-              //     dataFromPrisma[i].count = museumObj[Object.keys(museumObj)[j]][key];
-              //     console.log("Count: " + dataFromPrisma[i].count);
-              //   }
-              // }
-              // console.log("Museum name: " + dataFromPrisma[i].museum);
-              // console.log("Date: " + dataFromPrisma[i].dateOfVisit);
-            // dataFromPrisma[i].data = museumObj[Object.keys(museumObj)[j]];
             }
         }
-      // console.log("Museum name from DB: " + dataFromPrisma[i].museum);
-      //   console.log("Date from DB: " + dataFromPrisma[i].dateOfVisit);
-      // if the date in the prisma database is not in the museumObj, add it to the museumObj
-      // if (!museumObj[dataFromPrisma[i].museum].hasOwnProperty(dataFromPrisma[i].date)) {
-      //   museumObj[dataFromPrisma[i].museum][dataFromPrisma[i].date] = 0;
-      // }
     }
-
-
   return {
     props: {
       lastScraped: lastScraped,
@@ -207,6 +213,6 @@ export async function getStaticProps() {
       museumNamesForScraping: museumNamesForScraping,
       museumObj: museumObj,
     },
-    revalidate: 40,
+    revalidate: 600,
   };
 }

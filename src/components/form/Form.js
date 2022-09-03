@@ -13,9 +13,10 @@ import PropTypes from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import moment, {isMoment} from "moment";
-import {Card, CardActions, CardContent, CardHeader, CardMedia, Collapse} from "@mui/material";
+import {ButtonGroup, Card, CardContent, CardHeader, CardMedia, Collapse, Tooltip, tooltipClasses} from "@mui/material";
 // import notificationImage from "/notification-image.png";
 import Typography from "@mui/material/Typography";
+import {styled} from "@mui/material/styles";
 // import classes from "*.module.css";
 // import {} from "../../../public/notification-image.png"
 // import { prisma } from '/Users/ericfletcher/WebstormProjects/bpl-museum-passes/lib/prisma.js'
@@ -41,6 +42,10 @@ TextMaskCustom.propTypes = {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
 };
+
+
+
+
 const Form = (props) => {
     const dayjs = require('dayjs')
     console.log(props.museumObj)
@@ -57,6 +62,36 @@ const Form = (props) => {
     const [numPasses, setNumPasses] = useState("");
     const [nameForURL, setNameForURL] = useState("");
     const [dateForURL, setDateForURL] = useState("");
+
+    const CustomWidthTooltip = styled(({ className, ...props }) => (
+        <Tooltip {...props} classes={{ popper: className }} />
+    ))({
+        [`& .${tooltipClasses.tooltip}`]: {
+            maxWidth: 150,
+            textAlign: "center",
+        },
+    });
+
+    const toolTipText = () => {
+        if (formValues.museum === "" || formValues.date === null) {
+            return "Please select museum name and date of visit"
+        } else if (formValues.museum !== "" && formValues.date !== null && formValues.initialNumPasses === 0) {
+            return "Disabled if no passes available"
+        } else if (formValues.initialNumPasses > 0) {
+            return "Click to reserve a pass via Boston Public Library"
+        }
+    };
+
+    const toolTipTextSubmit = () => {
+        if (formValues.email === "" && formValues.phone === "") {
+            return "Please enter your email and/or phone number"
+        } else if (formValues.email === "" && formValues.phone.length !== 14) {
+            return "Phone number must be 10 digits"
+        } else {
+            return ""
+        }
+    };
+
     // function for setting the maxDate for DatePicker
     const setMaxDate = (daysToAdd) => {
         const now = new Date()
@@ -139,18 +174,8 @@ const Form = (props) => {
         }
     }
 
+    console.log("Phone length: " + formValues.phone.length)
 
-    // const handleSubmit = (event) => {
-    //     event.preventDefault();
-    //     console.log(formValues);
-    //
-    //     // saveRequest().then(r => formValues);
-    //     // setFormValues({
-    //     //     ...formValues,
-    //     //     initialNumPasses: props.museumObj[formValues.museum][formValues.date],
-    //     //     // museum: event.target.value,
-    //     // });
-    // };
     return (
         <Box
             alignItems="center"
@@ -164,7 +189,7 @@ const Form = (props) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                style={{maxWidth: 450, minHeight: 350, backgroundColor: "#FFFFFF"}}
+                style={{padding: 10, backgroundColor: "#FFFFFF"}}
                 variant="outlined"
             >
                 <CardHeader
@@ -172,32 +197,41 @@ const Form = (props) => {
                     subheader={<Typography sx={{color: 'black',}}>Museum Pass Notifier</Typography>}
                 />
                 <CardMedia
-                    height="200"
+                    height="5"
                     component="img"
                     image="/futuristic-ga407d83ce_640.png"
                 />
-                <CardContent>
-                    <Typography variant="body2" color="black" fontSize={15}>
-                        Select the museum name and date of visit
-                        <br/>
-                        <br/>
-                        <b>If passes are available:</b>
-                        <br/>
-                        Click <b>Reserve Pass</b> to reserve a pass
-                        <br/>
-                        -or-
-                        <br/>
-                        Click <b>Notify Me</b> to receive a notification when the next pass is available
-                        <br/>
-                        <br/>
-                        <b>If no passes are available:</b>
-                        <br/>
-                        Click <b>Notify Me</b> to receive a notification when the next pass is available
-                    </Typography>
-                </CardContent>
+                {/*<CardContent>*/}
+                {/*<Typography variant="body2" color="black" fontSize={15}>*/}
+                {/*    Select the museum name and date of visit*/}
+                {/*    <br/>*/}
+                {/*    <br/>*/}
+                {/*    <b>If passes are available:</b>*/}
+                {/*    <br/>*/}
+                {/*    Click <b>Reserve Pass</b> to reserve a pass*/}
+                {/*    <br/>*/}
+                {/*    -or-*/}
+                {/*    <br/>*/}
+                {/*    Click <b>Notify Me</b> to receive a notification when the next pass is available*/}
+                {/*    <br/>*/}
+                {/*    <br/>*/}
+                {/*    <b>If no passes are available:</b>*/}
+                {/*    <br/>*/}
+                {/*    Click <b>Notify Me</b> to receive a notification when the next pass is available*/}
+                {/*</Typography>*/}
+                {/*</CardContent>*/}
                 <div>
+                    <br/>
+                    <Typography
+                        style={{textAlign: 'center'}}
+                        hidden={formValues.date !== null && formValues.date !== "" && formValues.museum !== ""}
+
+                    >
+                        Select Museum Name Then Date of Visit
+                    </Typography>
+                    <br/>
                     <FormControl variant="standard">
-                        <InputLabel id="museum-select">Museum</InputLabel>
+                        <InputLabel id="museum-select">Museum Name</InputLabel>
                         <Select
                             id="standard-select-currency"
                             label="Museum"
@@ -219,6 +253,7 @@ const Form = (props) => {
                         </Select>
                     </FormControl>
                 </div>
+                <br/>
                 <div>
                     <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DatePicker
@@ -232,7 +267,7 @@ const Form = (props) => {
                                     // Prevent user from typing in a date
                                     // Helps with initial prompt to user to select a date and museum
                                     onKeyDown={e => {
-                                        if (e.key !== "Tab" || e.key !== "Enter") {
+                                        if (e.key !== "Tab" && e.key !== "Enter") {
                                             e.preventDefault()
                                         }
                                     }}
@@ -255,81 +290,124 @@ const Form = (props) => {
                         formValues.initialNumPasses
                     }
                     </Typography>
-                    <Typography
-                        style={{textAlign: 'center'}}
-                        hidden={formValues.date !== null && formValues.date !== "" && formValues.museum !== ""}
-
-                    >
-                        Please select a date of visit and museum.
-                    </Typography>
                 </CardContent>
-                <Button
-                    color="primary"
-                    type="button"
-                    href={"https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL}
-                    target="_blank"
-                    variant="contained"
-                    disabled={formValues.initialNumPasses === 0 || formValues.initialNumPasses === ""}
+                {/*<br/>*/}
+                <ButtonGroup
+                    // variant={"contained"}
+                    // aria-label="outlined primary button group"
+                    size={"medium"}
                 >
-                    Reserve Pass
-                </Button>
-                <br/><br/>
-                <Button
-                    color="primary"
-                    type="button"
-                    variant="contained"
-                    onClick={handleExpandClick}
-                    disabled={formValues.date === null || formValues.date === "" || formValues.museum === ""}
-                >
-                    Notify Me
-                </Button>
-                <CardActions disableSpacing>
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent
-                    >
-                        <Typography >
-                            Enter your email address and/or phone number to be notified when the next pass becomes
-                            available.
-                        </Typography>
-                        <div>
-                            <TextField
-                                id="email"
-                                label="Email"
-                                name="email"
-                                style={{width: 300}}
-                                type="email"
-                                value={formValues.email}
-                                variant="standard"
-                                onChange={handleInputChange}
-                            />
-                            <FormControl variant="standard">
-                                <InputLabel htmlFor="formatted-phone-input">
-                                    Phone
-                                </InputLabel>
-                                <Input
-                                    id="formatted-phone-input"
-                                    inputComponent={TextMaskCustom}
-                                    name="phone"
-                                    style={{width: 300}}
-                                    value={formValues.phone}
-                                    onChange={handleInputChange}
-                                />
-                            </FormControl>
-                        </div>
-                        <br/><br/>
+                    <CustomWidthTooltip
+                        enterTouchDelay={50}
+                        // disableHoverListener={formValues.initialNumPasses > 0}
+                        title={toolTipText()}
+                        >
+                        <span>
                         <Button
                             color="primary"
-                            type="submit"
+                            type="button"
+                            href={"https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL}
+                            target="_blank"
                             variant="contained"
-                            disabled={formValues.email === "" && formValues.phone === ""}
+                            sx={{width: 150, marginRight: 0.5, height: "100%"}}
+                            disabled={formValues.initialNumPasses === 0 || formValues.initialNumPasses === ""}
                         >
-                            Submit
+                            Reserve Pass
                         </Button>
-                    </CardContent>
+                            </span>
+                    </CustomWidthTooltip>
+                    <br/><br/>
+                    <CustomWidthTooltip
+                        enterTouchDelay={50}
+                        title={
+                        formValues.museum === "" || formValues.date === null ? "Please select museum name and date of visit" : "Get notified when next pass becomes available"
+                    }
+                    >
+                        <span>
+                    <Button
+                        color="primary"
+                        type="button"
+                        variant="contained"
+                        onClick={handleExpandClick}
+                        sx={{width: 150, height: "100%"}}
+                        disabled={formValues.date === null || formValues.date === "" || formValues.museum === ""}
+                    >
+                        Notify Me
+                    </Button>
+                            </span>
+                    </CustomWidthTooltip>
+
+                </ButtonGroup>
+                {/*<CardActions disableSpacing>*/}
+                {/*</CardActions>*/}
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <CardContent
+                            style={{
+                                // display:'flex',
+                                // width: 398,
+                                padding: 10
+                                // alignItems: "center",
+                                // justifyContent: "center"
+                            }}
+                        >
+                            <br/>
+                            <Typography>
+                                Enter Email and/or Mobile Phone
+                            </Typography>
+                            <br/>
+                            <div style={{justifyContent: 'center'}}>
+                                <TextField
+                                    id="email"
+                                    label="Email"
+                                    name="email"
+                                    style={{width: 300}}
+                                    type="email"
+                                    value={formValues.email}
+                                    variant="standard"
+                                    onChange={handleInputChange}
+                                />
+                                <br/><br/>
+                                <FormControl variant="standard">
+                                    <InputLabel htmlFor="formatted-phone-input">
+                                        Phone
+                                    </InputLabel>
+                                    <Input
+                                        id="formatted-phone-input"
+                                        inputComponent={TextMaskCustom}
+                                        name="phone"
+                                        style={{width: 300}}
+                                        value={formValues.phone}
+                                        onChange={handleInputChange}
+                                    />
+                                </FormControl>
+                            </div>
+                            <br/>
+                            <CustomWidthTooltip
+                            title={toolTipTextSubmit()}
+                            sx={{padding: 1.5}}
+                            >
+                                <span>
+                            <Button
+                                sx={{width: 150, height: 48}}
+                                // size={"medium"}
+                                color="primary"
+                                type="submit"
+                                variant="contained"
+                                disabled={(formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14}
+                            >
+                                Submit
+                            </Button>
+                                    </span>
+                            </CustomWidthTooltip>
+                        </CardContent>
+                    </div>
                 </Collapse>
+
+
                 <div>
                     <Typography fontSize={12}>
+                        <br/>
                         Last scraped: {props.lastScraped}
                     </Typography>
                 </div>
