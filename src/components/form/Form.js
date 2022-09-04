@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -18,6 +18,8 @@ import {ButtonGroup, Card, CardContent, CardHeader, CardMedia, Collapse, Tooltip
 import Typography from "@mui/material/Typography";
 import {styled} from "@mui/material/styles";
 import BuyMeACoffeeButton from "../BuyMeACoffeeButton";
+import ReCAPTCHA from "react-google-recaptcha";
+
 // import classes from "*.module.css";
 // import {} from "../../../public/notification-image.png"
 // import { prisma } from '/Users/ericfletcher/WebstormProjects/bpl-museum-passes/lib/prisma.js'
@@ -47,6 +49,7 @@ TextMaskCustom.propTypes = {
 
 const Form = (props) => {
     const dayjs = require('dayjs')
+    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
     console.log(props.museumObj)
     const defaultValues = {
         date: null,
@@ -61,6 +64,7 @@ const Form = (props) => {
     const [numPasses, setNumPasses] = useState("");
     const [nameForURL, setNameForURL] = useState("");
     const [dateForURL, setDateForURL] = useState("");
+    const reRef = useRef();
 
     const CustomWidthTooltip = styled(({className, ...props}) => (
         <Tooltip {...props} classes={{popper: className}}/>
@@ -156,18 +160,24 @@ const Form = (props) => {
         e.preventDefault()
         try {
             console.log(formValues);
+
+            const token = await reRef.current.executeAsync();
+            reRef.current.reset();
+
+            console.log("TOKEN: " + token)
+
             const body = {
                 museum: formValues.museum,
                 dateOfVisit: formValues.date,
                 initialNumPasses: formValues.initialNumPasses,
                 email: formValues.email,
-                phone: formValues.phone
+                phone: formValues.phone,
             };
             console.log(body);
             await fetch(`/api/requests`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(body),
+                body: JSON.stringify({body: body, token: token}),
             })
             setFormValues({
                 ...formValues,
@@ -185,6 +195,7 @@ const Form = (props) => {
 
     console.log("Phone length: " + formValues.phone.length)
 
+
     return (
         <Box
             alignItems="center"
@@ -194,6 +205,11 @@ const Form = (props) => {
             component="form"
             onSubmit={handleSubmit}
         >
+            <ReCAPTCHA
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                size={"invisible"}
+                ref={reRef}
+            />
             <Card
                 display="flex"
                 alignItems="center"
