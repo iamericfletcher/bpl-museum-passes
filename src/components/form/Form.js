@@ -17,6 +17,7 @@ import {ButtonGroup, Card, CardContent, CardHeader, CardMedia, Collapse, Tooltip
 // import notificationImage from "/notification-image.png";
 import Typography from "@mui/material/Typography";
 import {styled} from "@mui/material/styles";
+import BuyMeACoffeeButton from "../BuyMeACoffeeButton";
 // import classes from "*.module.css";
 // import {} from "../../../public/notification-image.png"
 // import { prisma } from '/Users/ericfletcher/WebstormProjects/bpl-museum-passes/lib/prisma.js'
@@ -44,8 +45,6 @@ TextMaskCustom.propTypes = {
 };
 
 
-
-
 const Form = (props) => {
     const dayjs = require('dayjs')
     console.log(props.museumObj)
@@ -63,8 +62,8 @@ const Form = (props) => {
     const [nameForURL, setNameForURL] = useState("");
     const [dateForURL, setDateForURL] = useState("");
 
-    const CustomWidthTooltip = styled(({ className, ...props }) => (
-        <Tooltip {...props} classes={{ popper: className }} />
+    const CustomWidthTooltip = styled(({className, ...props}) => (
+        <Tooltip {...props} classes={{popper: className}}/>
     ))({
         [`& .${tooltipClasses.tooltip}`]: {
             maxWidth: 150,
@@ -142,10 +141,12 @@ const Form = (props) => {
     };
     const handleExpandClick = () => {
         setExpanded(!expanded);
+        // Phone number label doesn't hold when notify me button is clicked and then no longer expanded then reopened
+        //TODO fix this
         if (!expanded) {
             setFormValues({
                 ...formValues,
-                email: "",
+                // email: "",
                 phone: "",
             });
         }
@@ -168,6 +169,14 @@ const Form = (props) => {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(body),
             })
+            setFormValues({
+                ...formValues,
+                museum: "",
+                date: null,
+                email: "",
+                phone: "",
+            });
+            setExpanded(!expanded);
             // await Router.push('/')
         } catch (error) {
             console.error(error)
@@ -179,7 +188,7 @@ const Form = (props) => {
     return (
         <Box
             alignItems="center"
-            display="flex"
+            // display="flex"
             height="100%"
             justifyContent="center"
             component="form"
@@ -298,10 +307,10 @@ const Form = (props) => {
                     size={"medium"}
                 >
                     <CustomWidthTooltip
-                        enterTouchDelay={50}
+                        enterTouchDelay={100}
                         // disableHoverListener={formValues.initialNumPasses > 0}
                         title={toolTipText()}
-                        >
+                    >
                         <span>
                         <Button
                             color="primary"
@@ -318,10 +327,10 @@ const Form = (props) => {
                     </CustomWidthTooltip>
                     <br/><br/>
                     <CustomWidthTooltip
-                        enterTouchDelay={50}
+                        enterTouchDelay={100}
                         title={
-                        formValues.museum === "" || formValues.date === null ? "Please select museum name and date of visit" : "Get notified when next pass becomes available"
-                    }
+                            formValues.museum === "" || formValues.date === null ? "Please select museum name and date of visit" : "Get notified when next pass becomes available"
+                        }
                     >
                         <span>
                     <Button
@@ -384,8 +393,9 @@ const Form = (props) => {
                             </div>
                             <br/>
                             <CustomWidthTooltip
-                            title={toolTipTextSubmit()}
-                            sx={{padding: 1.5}}
+                                title={toolTipTextSubmit()}
+                                sx={{padding: 1.5}}
+                                enterTouchDelay={100}
                             >
                                 <span>
                             <Button
@@ -412,7 +422,10 @@ const Form = (props) => {
                     </Typography>
                 </div>
             </Card>
+            <br/>
+            <BuyMeACoffeeButton/>
         </Box>
+
     );
 };
 
