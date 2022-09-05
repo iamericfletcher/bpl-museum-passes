@@ -14,17 +14,10 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import moment, {isMoment} from "moment";
 import {ButtonGroup, Card, CardContent, CardHeader, CardMedia, Collapse, Tooltip, tooltipClasses} from "@mui/material";
-// import notificationImage from "/notification-image.png";
 import Typography from "@mui/material/Typography";
 import {styled} from "@mui/material/styles";
 import BuyMeACoffeeButton from "../BuyMeACoffeeButton";
 import ReCAPTCHA from "react-google-recaptcha";
-
-// import classes from "*.module.css";
-// import {} from "../../../public/notification-image.png"
-// import { prisma } from '/Users/ericfletcher/WebstormProjects/bpl-museum-passes/lib/prisma.js'
-//
-// console.log(prisma)
 
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
@@ -49,19 +42,18 @@ TextMaskCustom.propTypes = {
 
 const Form = (props) => {
     const dayjs = require('dayjs')
-    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-    console.log(props.museumObj)
     const defaultValues = {
         date: null,
         initialNumPasses: 0,
         museum: "",
         email: "",
         phone: "",
+        nameForURL: "",
+        dateForURL: "",
+        url: "",
     };
     const [formValues, setFormValues] = useState(defaultValues);
-    const [dateOrMuseumClicked, setDateOrMuseumClicked] = useState(false);
     const [expanded, setExpanded] = React.useState(false);
-    const [numPasses, setNumPasses] = useState("");
     const [nameForURL, setNameForURL] = useState("");
     const [dateForURL, setDateForURL] = useState("");
     const reRef = useRef();
@@ -104,7 +96,6 @@ const Form = (props) => {
     const handleInputChange = (event) => {
         // Used for the date picker
         if (isMoment(event)) {
-            console.log("isMoment")
             if (props.museumObj[formValues.museum][event.format('YYYY-MM-DD')] === undefined) {
                 formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = 0;
@@ -113,11 +104,10 @@ const Form = (props) => {
                 formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
             }
             setDateForURL(event.format('MM/DD/YYYY'))
+            formValues.dateForURL = event.format('MM/DD/YYYY')
         } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
-            console.log("is not moment && event !== null")
             formValues.museum = event.target.value;
             if (event.target.name === "museum") {
-                console.log("event.target.name === museum")
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
                     formValues.initialNumPasses = 0;
                 } else {
@@ -128,18 +118,17 @@ const Form = (props) => {
                 // e.g. Boston Children's Museum -> Boston Children's Museum (e-ticket)
                 // e.g. Museum of Fine Arts -> Museum of Fine Arts (e-voucher)
                 for (let i = 0; i < props.museumNamesForScraping.length; i++) {
-                    console.log("entered for loop")
                     if (props.museumNamesForScraping[i].toString().split("(")[0] === event.target.value) {
                         setNameForURL(props.museumNamesForScraping[i].toString())
+                        formValues.nameForURL = props.museumNamesForScraping[i].toString()
                     }
                 }
+                formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
             }
         } else {
             setFormValues({
                 ...formValues,
-                [event.target.name]: event.target.value,
-                // email: event.target.value,
-                // phone: event.target.value,
+                [event.target.name]: event.target.value
             });
         }
     };
@@ -159,21 +148,16 @@ const Form = (props) => {
     const handleSubmit = async e => {
         e.preventDefault()
         try {
-            console.log(formValues);
-
             const token = await reRef.current.executeAsync();
             reRef.current.reset();
-
-            console.log("TOKEN: " + token)
-
             const body = {
                 museum: formValues.museum,
                 dateOfVisit: formValues.date,
                 initialNumPasses: formValues.initialNumPasses,
                 email: formValues.email,
                 phone: formValues.phone,
+                url: formValues.url,
             };
-            console.log(body);
             await fetch(`/api/requests`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -185,6 +169,7 @@ const Form = (props) => {
                 date: null,
                 email: "",
                 phone: "",
+                initialNumPasses: 0
             });
             setExpanded(!expanded);
             // await Router.push('/')
@@ -192,14 +177,9 @@ const Form = (props) => {
             console.error(error)
         }
     }
-
-    console.log("Phone length: " + formValues.phone.length)
-
-
     return (
         <Box
             alignItems="center"
-            // display="flex"
             height="100%"
             justifyContent="center"
             component="form"
@@ -226,25 +206,6 @@ const Form = (props) => {
                     component="img"
                     image="/futuristic-ga407d83ce_640.png"
                 />
-                {/*<CardContent>*/}
-                {/*<Typography variant="body2" color="black" fontSize={15}>*/}
-                {/*    Select the museum name and date of visit*/}
-                {/*    <br/>*/}
-                {/*    <br/>*/}
-                {/*    <b>If passes are available:</b>*/}
-                {/*    <br/>*/}
-                {/*    Click <b>Reserve Pass</b> to reserve a pass*/}
-                {/*    <br/>*/}
-                {/*    -or-*/}
-                {/*    <br/>*/}
-                {/*    Click <b>Notify Me</b> to receive a notification when the next pass is available*/}
-                {/*    <br/>*/}
-                {/*    <br/>*/}
-                {/*    <b>If no passes are available:</b>*/}
-                {/*    <br/>*/}
-                {/*    Click <b>Notify Me</b> to receive a notification when the next pass is available*/}
-                {/*</Typography>*/}
-                {/*</CardContent>*/}
                 <div>
                     <br/>
                     <Typography
@@ -266,9 +227,6 @@ const Form = (props) => {
                             value={formValues.museum}
                             variant="standard"
                             onChange={handleInputChange}
-                            onOpen={() => {
-                                console.log("Museum Select open")
-                            }}
                         >
                             {props.museumNamesForSelectField.map((option) => (
                                 <MenuItem key={option} value={option}>
@@ -316,15 +274,11 @@ const Form = (props) => {
                     }
                     </Typography>
                 </CardContent>
-                {/*<br/>*/}
                 <ButtonGroup
-                    // variant={"contained"}
-                    // aria-label="outlined primary button group"
                     size={"medium"}
                 >
                     <CustomWidthTooltip
                         enterTouchDelay={100}
-                        // disableHoverListener={formValues.initialNumPasses > 0}
                         title={toolTipText()}
                     >
                         <span>
@@ -363,17 +317,11 @@ const Form = (props) => {
                     </CustomWidthTooltip>
 
                 </ButtonGroup>
-                {/*<CardActions disableSpacing>*/}
-                {/*</CardActions>*/}
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <div style={{display: 'flex', justifyContent: 'center'}}>
                         <CardContent
                             style={{
-                                // display:'flex',
-                                // width: 398,
                                 padding: 10
-                                // alignItems: "center",
-                                // justifyContent: "center"
                             }}
                         >
                             <br/>
@@ -416,7 +364,6 @@ const Form = (props) => {
                                 <span>
                             <Button
                                 sx={{width: 150, height: 48}}
-                                // size={"medium"}
                                 color="primary"
                                 type="submit"
                                 variant="contained"

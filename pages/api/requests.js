@@ -6,12 +6,25 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default async (req, res) => {
-    console.log(req.body.token, "token")
+    // Google Recaptcha check
     const human = validateHuman(req.body.token);
 
+    async function validateHuman(token) {
+        const secret = process.env.RECAPTCHA_SECRET_KEY;
+        const response = await fetch(
+            `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
+            {
+                method: "POST",
+            }
+        );
+        const data = await response.json();
+
+        // return false;
+        return data.success;
+    }
+    // Do this if not passing recaptcha check - validateHuman()
     if (!human) {
-        res.status(401).json({error: "Unauthorized"});
-        res.json({error: "Unauthorized, Google reCAPTCHA failed"});
+        res.status(400).json({error: "Unauthorized - failed recaptcha"});
         return;
     }
 
@@ -28,20 +41,4 @@ export default async (req, res) => {
         data: requestData
     })
     res.json(savedRequest);
-
-    async function validateHuman(token) {
-        const secret = process.env.RECAPTCHA_SECRET_KEY;
-        const response = await fetch(
-            `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
-            {
-                method: "POST",
-            }
-        );
-        const data = await response.json();
-
-        console.log(data, "recaptcha data");
-
-        return false;
-        // return data.success;
-    }
 }

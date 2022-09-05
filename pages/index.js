@@ -4,33 +4,13 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import 'moment-timezone';
 import Container from "@mui/material/Container";
-// import prisma from '/lib/prisma.js';
 import {PrismaClient} from "@prisma/client";
-// import {env} from "../.env"
-// import {env} from "eslint-config-next";
 
-// import { PrismaClient } from "@prisma/client";
-
-// import prisma from "../lib/prisma.js";
-
-// console.log(prisma)
-
-
-// const Item = styled(Paper)(({ theme }) => ({
-//   backgroundColor: "pink",
-//   ...theme.typography.body2,
-//   padding: theme.spacing(1),
-//   textAlign: "center",
-//   height: "100%"
-//   // color: 'pink'
-// }));
 export default function Index(props) {
     return (
         <Container
             sx={{
                 backgroundColor: "#f8edeb",
-                // ...theme.typography.body2,
-                // padding: theme.spacing(1),
                 padding: 1,
                 textAlign: "center",
                 minHeight: "100vh",
@@ -38,20 +18,15 @@ export default function Index(props) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center"
-                // flexGrow: 1
             }}
         >
-            {/*<Item>*/}
             <Form {...props} />
-            {/*</Item>*/}
         </Container>
 
     );
 }
 
 export async function getStaticProps() {
-    console.log("getStaticProps initialized");
-
     const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
     const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
     const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
@@ -59,19 +34,6 @@ export async function getStaticProps() {
     const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
     const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
     const mg = mailgun({apiKey: MAILGUN_API_KEY, domain: MAILGUN_DOMAIN});
-    const data2 = {
-        // from: 'Excited User <me@samples.mailgun.org>',
-        from: `bpl-pass-notification@${MAILGUN_DOMAIN}`,
-        to: 'EricFletcher3@gmail.com',
-        // to: 'bar@example.com, YOU@YOUR_DOMAIN_NAME',
-        subject: 'Museum Pass Notification',
-        text: 'Greetings! This is a notification that a museum pass has become available.\n\n' +
-            'Please visit the link below to reserve this pass.\n\n' +
-            'Note that this is first come first serve, so the quicker you visit the link, the better chances you have of securing the pass!\n\n' +
-            'Sincerely,\n\n' +
-            'Eric Fletcher\n' +
-            'BPL Pass Notification Developer'
-    };
 
     var moment = require('moment-timezone');
 
@@ -79,11 +41,8 @@ export async function getStaticProps() {
     const museumNamesForSelectField = [];
     const museumNamesForScraping = [];
     const museumObj = {};
-    // const todaysDate = moment(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }).split(",")[0]).format("YYYY-MM-DD");
     const todaysDate = moment().format("YYYY-MM-DD");
     console.log("Today's Date up top: " + todaysDate);
-    // todaysDate = moment(todaysDate).format("YYYY-MM-DD");
-    // todaysDate.getTime();
     const {data} = await axios.get(
         "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=1"
     );
@@ -138,11 +97,9 @@ export async function getStaticProps() {
                         if (nextDate !== tempDate) {
                             tempDate = nextDate;
                             if (!hidePassCount) {
-                                // console.log("Number of passes available: " + numberPassesAvailCount);
                                 museumObj[museumNamesForSelectField[i]][moment(tempDate).format("YYYY-MM-DD")] =
                                     numberPassesAvailCount;
                             }
-                            // console.log("Date: " + tempDate);
                             museumObj[museumNamesForSelectField[i]][moment(tempDate).format("YYYY-MM-DD")] =
                                 numberPassesAvailCount;
                             numberPassesAvailCount = 0;
@@ -153,7 +110,6 @@ export async function getStaticProps() {
                     museumObj[museumNamesForSelectField[i]][moment(tempDate).format("YYYY-MM-DD")] = numberPassesAvailCount;
                 }
             });
-            // console.log("Number of passes available: " + numberPassesAvailCount);
             if (numberPassesAvailCount === 0) {
                 museumObj[museumNamesForSelectField[i]][moment(tempDate).format("YYYY-MM-DD")] = numberPassesAvailCount;
             }
@@ -180,12 +136,34 @@ export async function getStaticProps() {
                     // Send email and/or mobile phone notification if the current number of passes available is greater
                     // than the initial number of passes available from the database
                     if (museumObj[Object.keys(museumObj)[j]][dataFromPrisma[i].dateOfVisit] !== undefined && dataFromPrisma[i].initialNumPasses < museumObj[Object.keys(museumObj)[j]][dataFromPrisma[i].dateOfVisit]) {
+                        let a = new URL(dataFromPrisma[i].url);
+                        const data2 = {
+                            // from: 'Excited User <me@samples.mailgun.org>',
+                            from: `bpl-pass-notification@${MAILGUN_DOMAIN}`,
+                            to: dataFromPrisma[i].email,
+                            // to: 'bar@example.com, YOU@YOUR_DOMAIN_NAME',
+                            subject: 'Museum Pass Notification',
+                            text: 'Greetings! \n\n' +
+                                'This is a notification that a museum pass has become available for ' + dataFromPrisma[i].museum + ' on ' + dataFromPrisma[i].dateOfVisit + '.' + '\n\n' +
+                                'Please visit the link below to reserve this pass.\n\n' + a + '\n\n' +
+                                'Note that this pass is first come first serve, so the quicker you visit the link, the better chances you have of securing the pass!\n\n' +
+                                'Sincerely,\n\n' +
+                                'Eric Fletcher\n' +
+                                'BPL Pass Notification Developer'
+                        };
+
                         mg.messages().send(data2, function (error, body) {
                             console.log(body);
                         });
                         client.messages
                             .create({
-                                body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
+                                body: 'Greetings! \n\n' +
+                                    'This is a notification that a museum pass has become available for ' + dataFromPrisma[i].museum + ' on ' + dataFromPrisma[i].dateOfVisit + '.' + '\n\n' +
+                                    'Please visit the link below to reserve this pass.\n\n' + a + '\n\n' +
+                                    'Note that this pass is first come first serve, so the quicker you visit the link, the better chances you have of securing the pass!\n\n' +
+                                    'Sincerely,\n\n' +
+                                    'Eric Fletcher\n' +
+                                    'BPL Pass Notification Developer',
                                 from: '+18145606408',
                                 to: '+1' + dataFromPrisma[i].phone.trim().replace(/[^0-9]/g, '')
                             })
