@@ -376,7 +376,7 @@ const Form = (props) => {
                     </CustomWidthTooltip>
 
                 </ButtonGroup>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <Collapse in={expanded} timeout="auto">
                     <div style={{display: 'flex', justifyContent: 'center'}}>
                         <CardContent
                             style={{
@@ -435,13 +435,13 @@ const Form = (props) => {
                         </CardContent>
                     </div>
                 </Collapse>
-                <br/> <br/>
+                <br/>
                 <span>
                 <Button
-                    color={"warning"}
-                    type="button"
-                    variant="contained"
-                    sx={{width: 150, marginRight: 0.5, height: "100%"}}
+                    // color={"warning"}
+                    // type="button"
+                    // variant="contained"
+                    // sx={{width: 150, marginRight: 0.5, height: "100%"}}
                     onClick={handleClose}
                 >
                     Instructions
