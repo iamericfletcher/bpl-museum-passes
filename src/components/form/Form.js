@@ -143,10 +143,10 @@ const Form = (props) => {
                 // console.log(formValues)
             }
         } else {
-            // setFormValues({
-            //     ...formValues,
-            //     [event.target.name]: event.target.value
-            // });
+            setFormValues({
+                ...formValues,
+                [event.target.name]: event.target.value
+            });
         }
         formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
         console.log(formValues)
