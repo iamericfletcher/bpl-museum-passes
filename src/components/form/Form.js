@@ -116,8 +116,10 @@ const Form = (props) => {
                 formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
             }
+            // formValues.dateForURL = event.format('MM/DD/YYYY')
             setDateForURL(event.format('MM/DD/YYYY'))
-            formValues.dateForURL = event.format('MM/DD/YYYY')
+            // formValues.dateForURL = event.format('MM/DD/YYYY')
+            console.log("Date for URL: " + dateForURL)
         } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
             formValues.museum = event.target.value;
             if (event.target.name === "museum") {
@@ -132,18 +134,22 @@ const Form = (props) => {
                 // e.g. Museum of Fine Arts -> Museum of Fine Arts (e-voucher)
                 for (let i = 0; i < props.museumNamesForScraping.length; i++) {
                     if (props.museumNamesForScraping[i].toString().split("(")[0] === event.target.value) {
+                        // formValues.nameForURL = props.museumNamesForScraping[i].toString()
                         setNameForURL(props.museumNamesForScraping[i].toString())
                         formValues.nameForURL = props.museumNamesForScraping[i].toString()
+                        console.log("Name for URL: " + nameForURL)
                     }
                 }
-                formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
+                // console.log(formValues)
             }
         } else {
-            setFormValues({
-                ...formValues,
-                [event.target.name]: event.target.value
-            });
+            // setFormValues({
+            //     ...formValues,
+            //     [event.target.name]: event.target.value
+            // });
         }
+        formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
+        console.log(formValues)
     };
     const handleExpandClick = () => {
         setExpanded(!expanded);
