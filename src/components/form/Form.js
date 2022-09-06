@@ -66,6 +66,7 @@ const Form = (props) => {
     const [expanded, setExpanded] = React.useState(false);
     const [nameForURL, setNameForURL] = useState("");
     const [dateForURL, setDateForURL] = useState("");
+    const [open, setOpen] = React.useState(false);
     const reRef = useRef();
 
     const CustomWidthTooltip = styled(({className, ...props}) => (
@@ -156,6 +157,10 @@ const Form = (props) => {
             });
         }
     }
+    // Toggle the dialog box with instructions
+    const handleClose = () => {
+        setOpen(!open);
+    };
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -181,7 +186,8 @@ const Form = (props) => {
                 date: null,
                 email: "",
                 phone: "",
-                initialNumPasses: 0
+                initialNumPasses: 0,
+                url: ""
             });
             setExpanded(!expanded);
             // await Router.push('/')
@@ -189,11 +195,6 @@ const Form = (props) => {
             console.error(error)
         }
     }
-
-    const [open, setOpen] = React.useState(true);
-    const handleClose = () => {
-        setOpen(!open);
-    };
 
     return (
 
@@ -226,7 +227,7 @@ const Form = (props) => {
                             Note that data is provided for the next 60 days only. <br/> <br/>
                             <b>Step 3:</b> <br/>
                             <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark><br/> <br/>
-                            Click the <b>NOTIFY ME</b> button to receive an email notification when the next pass becomes available (due to cancellations, etc.)
+                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification when the next pass becomes available (due to cancellations, etc.)
                             <br/> <br/>
                             <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark><br/> <br/>
                             Click the <b>RESERVE PASS</b> button to reserve a pass via the <a href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'}>Boston Public Library Museum Passes website</a>.
@@ -235,7 +236,7 @@ const Form = (props) => {
                             OR
                             <br/>
                             <br/>
-                            Click the <b>NOTIFY ME</b> button to receive an email notification when the next pass becomes available (due to cancellations, etc.)
+                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification when the next pass becomes available (due to cancellations, etc.)
                             <br/>
                         </DialogContentText>
                     </DialogContent>

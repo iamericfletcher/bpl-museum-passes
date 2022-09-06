@@ -24,46 +24,6 @@ export default function Index(props) {
                 alignItems: "center"
             }}
         >
-            {/*<div>*/}
-            {/*    /!*<Button onClick={handleClickOpen('paper')}>scroll=paper</Button>*!/*/}
-            {/*    /!*<Button onClick={handleClickOpen('body')}>scroll=body</Button>*!/*/}
-            {/*    <Dialog*/}
-            {/*        open={open}*/}
-            {/*        onClose={handleClose}*/}
-            {/*        scroll={'paper'}*/}
-            {/*        aria-labelledby="scroll-dialog-title"*/}
-            {/*        aria-describedby="scroll-dialog-description"*/}
-            {/*    >*/}
-            {/*        <DialogTitle id="scroll-dialog-title">Instructions</DialogTitle>*/}
-            {/*        <DialogContent dividers>*/}
-            {/*        <DialogContentText*/}
-            {/*                id="scroll-dialog-description"*/}
-            {/*                // ref={descriptionElementRef}*/}
-            {/*                tabIndex={-1}*/}
-            {/*            >*/}
-            {/*            <b>Step 1:</b> <br/>Select the museum name from the dropdown menu. <br/> <br/>*/}
-            {/*            <b>Step 2:</b> <br/>Select the date you want to visit the museum. <br/> <br/>*/}
-            {/*            Note that data is provided for the next 60 days only. <br/> <br/>*/}
-            {/*            <b>Step 3:</b> <br/>*/}
-            {/*            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark><br/> <br/>*/}
-            {/*            Click the <b>NOTIFY ME</b> button to receive an email notification when the next pass becomes available (due to cancellations, etc.)*/}
-            {/*            <br/> <br/>*/}
-            {/*            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark><br/> <br/>*/}
-            {/*            Click the <b>RESERVE PASS</b> button to reserve a pass via the <a href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'}>Boston Public Library Museum Passes website</a>.*/}
-            {/*            <br/>*/}
-            {/*            <br/>*/}
-            {/*            OR*/}
-            {/*            <br/>*/}
-            {/*            <br/>*/}
-            {/*            Click the <b>NOTIFY ME</b> button to receive an email notification when the next pass becomes available (due to cancellations, etc.)*/}
-            {/*            <br/>*/}
-            {/*            </DialogContentText>*/}
-            {/*        </DialogContent>*/}
-            {/*        <DialogActions>*/}
-            {/*            <Button onClick={handleClose}>Close</Button>*/}
-            {/*        </DialogActions>*/}
-            {/*    </Dialog>*/}
-            {/*</div>*/}
                 <Form {...props} />
         </Container>
     );
