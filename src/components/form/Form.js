@@ -13,7 +13,17 @@ import PropTypes from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import moment, {isMoment} from "moment";
-import {ButtonGroup, Card, CardContent, CardHeader, CardMedia, Collapse, Tooltip, tooltipClasses} from "@mui/material";
+import {
+    ButtonGroup,
+    Card,
+    CardContent,
+    CardHeader,
+    CardMedia,
+    Collapse,
+    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+    Tooltip,
+    tooltipClasses
+} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {styled} from "@mui/material/styles";
 import BuyMeACoffeeButton from "../BuyMeACoffeeButton";
@@ -80,7 +90,9 @@ const Form = (props) => {
     const toolTipTextSubmit = () => {
         if (formValues.email === "" && formValues.phone === "") {
             return "Please enter your email and/or phone number"
-        } else if (formValues.email === "" && formValues.phone.length !== 14) {
+        } else if (formValues.email === "" && formValues.phone !== "" && formValues.phone.length !== 14) {
+            return "Phone number must be 10 digits"
+        } else if (formValues.email !== "" && formValues.phone !== "" && formValues.phone.length !== 14) {
             return "Phone number must be 10 digits"
         } else {
             return ""
@@ -177,7 +189,14 @@ const Form = (props) => {
             console.error(error)
         }
     }
+
+    const [open, setOpen] = React.useState(true);
+    const handleClose = () => {
+        setOpen(!open);
+    };
+
     return (
+
         <Box
             alignItems="center"
             height="100%"
@@ -185,6 +204,46 @@ const Form = (props) => {
             component="form"
             onSubmit={handleSubmit}
         >
+            <div>
+                {/*<Button onClick={handleClickOpen('paper')}>scroll=paper</Button>*/}
+                {/*<Button onClick={handleClickOpen('body')}>scroll=body</Button>*/}
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    scroll={'paper'}
+                    aria-labelledby="scroll-dialog-title"
+                    aria-describedby="scroll-dialog-description"
+                >
+                    <DialogTitle id="scroll-dialog-title">Instructions</DialogTitle>
+                    <DialogContent dividers>
+                        <DialogContentText
+                            id="scroll-dialog-description"
+                            // ref={descriptionElementRef}
+                            tabIndex={-1}
+                        >
+                            <b>Step 1:</b> <br/>Select the museum name from the dropdown menu. <br/> <br/>
+                            <b>Step 2:</b> <br/>Select the date you want to visit the museum. <br/> <br/>
+                            Note that data is provided for the next 60 days only. <br/> <br/>
+                            <b>Step 3:</b> <br/>
+                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark><br/> <br/>
+                            Click the <b>NOTIFY ME</b> button to receive an email notification when the next pass becomes available (due to cancellations, etc.)
+                            <br/> <br/>
+                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark><br/> <br/>
+                            Click the <b>RESERVE PASS</b> button to reserve a pass via the <a href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'}>Boston Public Library Museum Passes website</a>.
+                            <br/>
+                            <br/>
+                            OR
+                            <br/>
+                            <br/>
+                            Click the <b>NOTIFY ME</b> button to receive an email notification when the next pass becomes available (due to cancellations, etc.)
+                            <br/>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
             <ReCAPTCHA
                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
                 size={"invisible"}
@@ -367,7 +426,7 @@ const Form = (props) => {
                                 color="primary"
                                 type="submit"
                                 variant="contained"
-                                disabled={(formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14}
+                                disabled={(formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14 || formValues.email !== "" && formValues.phone !== "" && formValues.phone.length !== 14}
                             >
                                 Submit
                             </Button>
@@ -376,17 +435,27 @@ const Form = (props) => {
                         </CardContent>
                     </div>
                 </Collapse>
-
-
-                <div>
-                    <Typography fontSize={12}>
-                        <br/>
-                        Last scraped: {props.lastScraped}
-                    </Typography>
-                </div>
+                <br/> <br/>
+                <span>
+                <Button
+                    color={"warning"}
+                    type="button"
+                    variant="contained"
+                    sx={{width: 150, marginRight: 0.5, height: "100%"}}
+                    onClick={handleClose}
+                >
+                    Instructions
+                </Button>
+                </span>
             </Card>
             <br/>
             <BuyMeACoffeeButton/>
+            <div>
+                <Typography fontSize={12}>
+                    <br/>
+                    Last scraped: {props.lastScraped}
+                </Typography>
+            </div>
         </Box>
 
     );
