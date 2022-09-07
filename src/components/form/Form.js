@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -13,6 +13,8 @@ import PropTypes from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import moment, {isMoment} from "moment";
+// import LoadingButton from '@mui/lab/LoadingButton';
+
 import {
     ButtonGroup,
     Card,
@@ -58,16 +60,20 @@ const Form = (props) => {
         museum: "",
         email: "",
         phone: "",
-        nameForURL: "",
-        dateForURL: "",
         url: "",
     };
     const [formValues, setFormValues] = useState(defaultValues);
     const [expanded, setExpanded] = React.useState(false);
-    const [nameForURL, setNameForURL] = useState("");
-    const [dateForURL, setDateForURL] = useState("");
+    const [nameForURL, setNameForURL] = useState();
+    const [dateForURL, setDateForURL] = useState();
     const [open, setOpen] = React.useState(false);
+    const [submitDisabled, setSubmitDisabled] = React.useState(false);
     const reRef = useRef();
+
+    useEffect(() => {
+        formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
+        console.log(formValues.url)
+    }, [nameForURL, dateForURL])
 
     const CustomWidthTooltip = styled(({className, ...props}) => (
         <Tooltip {...props} classes={{popper: className}}/>
@@ -78,10 +84,10 @@ const Form = (props) => {
         },
     });
 
-    const toolTipText = () => {
+    const toolTipTextReserveButton = () => {
         if (formValues.museum === "" || formValues.date === null) {
             return "Please select museum name and date of visit"
-        } else if (formValues.museum !== "" && formValues.date !== null && formValues.initialNumPasses === 0) {
+        } else if (formValues.museum !== "" && formValues.initialNumPasses === 0) {
             return "Disabled if no passes available"
         } else if (formValues.initialNumPasses > 0) {
             return "Click to reserve a pass via Boston Public Library"
@@ -109,19 +115,34 @@ const Form = (props) => {
     const handleInputChange = (event) => {
         // Used for the date picker
         if (isMoment(event)) {
+            setDateForURL(event.format('MM/DD/YYYY'))
+            console.log(event)
+            setFormValues({
+                ...formValues,
+                date: event.format('YYYY-MM-DD')
+            });
             if (props.museumObj[formValues.museum][event.format('YYYY-MM-DD')] === undefined) {
-                formValues.date = event.format('YYYY-MM-DD');
+                // formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = 0;
+                // setDateForURL(event.format('MM/DD/YYYY'))
+                // console.log("Date for URL: " + dateForURL)
             } else {
-                formValues.date = event.format('YYYY-MM-DD');
+                // formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
+                // setDateForURL(event.format('MM/DD/YYYY'))
+                // console.log("Date for URL: " + dateForURL)
             }
             // formValues.dateForURL = event.format('MM/DD/YYYY')
-            setDateForURL(event.format('MM/DD/YYYY'))
+            // setDateForURL(event.format('MM/DD/YYYY'))
             // formValues.dateForURL = event.format('MM/DD/YYYY')
-            console.log("Date for URL: " + dateForURL)
+            // console.log("Date for URL: " + dateForURL)
         } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
-            formValues.museum = event.target.value;
+            // formValues.museum = event.target.value;
+            // console.log("Museum: " + event.target.value)
+            setFormValues({
+                ...formValues,
+                [event.target.name]: event.target.value
+            });
             if (event.target.name === "museum") {
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
                     formValues.initialNumPasses = 0;
@@ -136,7 +157,7 @@ const Form = (props) => {
                     if (props.museumNamesForScraping[i].toString().split("(")[0] === event.target.value) {
                         // formValues.nameForURL = props.museumNamesForScraping[i].toString()
                         setNameForURL(props.museumNamesForScraping[i].toString())
-                        formValues.nameForURL = props.museumNamesForScraping[i].toString()
+                        // formValues.nameForURL = props.museumNamesForScraping[i].toString()
                         console.log("Name for URL: " + nameForURL)
                     }
                 }
@@ -149,7 +170,7 @@ const Form = (props) => {
             });
         }
         formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
-        console.log(formValues)
+        // console.log(formValues)
     };
     const handleExpandClick = () => {
         setExpanded(!expanded);
@@ -159,7 +180,7 @@ const Form = (props) => {
             setFormValues({
                 ...formValues,
                 // email: "",
-                phone: "",
+                // phone: "",
             });
         }
     }
@@ -170,8 +191,9 @@ const Form = (props) => {
 
     const handleSubmit = async e => {
         e.preventDefault()
+        setSubmitDisabled(true)
         try {
-            const token = await reRef.current.executeAsync();
+            const token = reRef.current.execute();
             reRef.current.reset();
             const body = {
                 museum: formValues.museum,
@@ -199,6 +221,8 @@ const Form = (props) => {
             // await Router.push('/')
         } catch (error) {
             console.error(error)
+        } finally {
+            setSubmitDisabled(false)
         }
     }
 
@@ -345,7 +369,7 @@ const Form = (props) => {
                 >
                     <CustomWidthTooltip
                         enterTouchDelay={100}
-                        title={toolTipText()}
+                        title={toolTipTextReserveButton()}
                     >
                         <span>
                         <Button
@@ -428,12 +452,21 @@ const Form = (props) => {
                                 enterTouchDelay={100}
                             >
                                 <span>
+                                    {/*  <LoadingButton*/}
+                                    {/*      size="small"*/}
+                                    {/*      // onClick={handleClick}*/}
+                                    {/*      // loading={loading}*/}
+                                    {/*      variant="outlined"*/}
+                                    {/*      disabled*/}
+                                    {/*  >*/}
+                                    {/*      Submit*/}
+                                    {/*</LoadingButton>*/}
                             <Button
                                 sx={{width: 150, height: 48}}
                                 color="primary"
                                 type="submit"
                                 variant="contained"
-                                disabled={(formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14 || formValues.email !== "" && formValues.phone !== "" && formValues.phone.length !== 14}
+                                disabled={submitDisabled || (formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14 || formValues.email !== "" && formValues.phone !== "" && formValues.phone.length !== 14}
                             >
                                 Submit
                             </Button>
