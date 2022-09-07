@@ -157,7 +157,7 @@ export async function getStaticProps() {
                                     'BPL Pass Notification Developer'
                             };
                             mg.messages().send(data2, function (error, body) {
-                                console.log(body);
+                                console.log("Email Body: " + body);
                             });
                         }
                         if (dataFromPrisma[i].phone !== null && dataFromPrisma[i].phone !== "") {
@@ -173,9 +173,9 @@ export async function getStaticProps() {
                                         'Eric Fletcher\n' +
                                         'BPL Pass Notification Developer',
                                     from: '+18145606408',
-                                    to: '+1' + dataFromPrisma[i].phone.trim().replace(/[^0-9]/g, '')
+                                    to: dataFromPrisma[i].phone.trim().replace(/[^0-9]/g, '')
                                 })
-                                .then(message => console.log(message.sid));
+                                .then(message => console.log("Phone Message SID: " + message.sid));
                         }
                         const deleteRequest = await prisma.request.delete({
                             where: {
