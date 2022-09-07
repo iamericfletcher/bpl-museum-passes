@@ -38,6 +38,7 @@
     "react-dom": "latest",
     "react-google-recaptcha": "^2.1.0",
     "react-number-format": "^4.9.3",
+    "react-router-dom": "^6.3.0",
     "twilio": "^3.81.0"
   },
   "devDependencies": {

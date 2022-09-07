@@ -13,6 +13,10 @@ import PropTypes from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import moment, {isMoment} from "moment";
+import { useRouter } from "next/router";
+
+
+
 // import LoadingButton from '@mui/lab/LoadingButton';
 
 import {
@@ -30,6 +34,7 @@ import Typography from "@mui/material/Typography";
 import {styled} from "@mui/material/styles";
 import BuyMeACoffeeButton from "../BuyMeACoffeeButton";
 import ReCAPTCHA from "react-google-recaptcha";
+import {Router} from "next/router";
 
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
@@ -69,6 +74,7 @@ const Form = (props) => {
     const [open, setOpen] = React.useState(false);
     const [submitDisabled, setSubmitDisabled] = React.useState(false);
     const reRef = useRef();
+    const router = useRouter()
 
     useEffect(() => {
         formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
@@ -128,7 +134,12 @@ const Form = (props) => {
                 // console.log("Date for URL: " + dateForURL)
             } else {
                 // formValues.date = event.format('YYYY-MM-DD');
-                formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
+                setFormValues({
+                    ...formValues,
+                    date: event.format('YYYY-MM-DD'),
+                    initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]
+                });
+                // formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
                 // setDateForURL(event.format('MM/DD/YYYY'))
                 // console.log("Date for URL: " + dateForURL)
             }
@@ -141,13 +152,23 @@ const Form = (props) => {
             // console.log("Museum: " + event.target.value)
             setFormValues({
                 ...formValues,
-                [event.target.name]: event.target.value
+                museum: event.target.value
             });
             if (event.target.name === "museum") {
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
-                    formValues.initialNumPasses = 0;
+                    // formValues.initialNumPasses = 0;
+                    setFormValues({
+                        ...formValues,
+                        museum: event.target.value,
+                        initialNumPasses: 0
+                    });
                 } else {
-                    formValues.initialNumPasses = props.museumObj[event.target.value.toString()][formValues.date];
+                    // formValues.initialNumPasses = props.museumObj[event.target.value.toString()][formValues.date];
+                    setFormValues({
+                        ...formValues,
+                        museum: event.target.value,
+                        initialNumPasses: props.museumObj[event.target.value.toString()][formValues.date]
+                    });
                 }
                 // Museum names for select drop down have had additional information after the name removed
                 // For the URL to work, we need to add back the information after the name
@@ -218,6 +239,10 @@ const Form = (props) => {
                 url: ""
             });
             setExpanded(!expanded);
+            await router.push("/")
+            // history.push("/")
+            // history.push("/");
+            // history.pushState('/')
             // await Router.push('/')
         } catch (error) {
             console.error(error)
