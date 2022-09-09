@@ -53,7 +53,6 @@
     "form-data": "^4.0.0",
     "mailgun-js": "^0.22.0",
     "moment-timezone": "^0.5.37",
-    "prisma": "^4.2.1",
     "prisma-client": "^0.0.0",
     "react-imask": "^6.4.2"
   }
