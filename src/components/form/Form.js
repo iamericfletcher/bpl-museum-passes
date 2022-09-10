@@ -73,7 +73,8 @@ const Form = (props) => {
     const [dateForURL, setDateForURL] = useState();
     const [open, setOpen] = React.useState(false);
     const [submitDisabled, setSubmitDisabled] = React.useState(false);
-    const reRef = useRef();
+    const recaptchaRef = React.useRef();
+    // const recaptchaRef = useRef({});
     const router = useRouter()
 
     useEffect(() => {
@@ -213,9 +214,12 @@ const Form = (props) => {
     const handleSubmit = async e => {
         e.preventDefault()
         setSubmitDisabled(true)
+        const recaptchaValue = await recaptchaRef.current.executeAsync();
+        recaptchaRef.current.reset();
+        // console.log("Recaptcha value: " + recaptchaValue)
+        // const token = await reRef.current.executeAsync;
+        // reRef.current.reset();
         try {
-            const token = reRef.current.execute();
-            reRef.current.reset();
             const body = {
                 museum: formValues.museum,
                 dateOfVisit: formValues.date,
@@ -227,7 +231,7 @@ const Form = (props) => {
             await fetch(`/api/requests`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({body: body, token: token}),
+                body: JSON.stringify({body: body, token: recaptchaValue}),
             })
             setFormValues({
                 ...formValues,
@@ -239,7 +243,7 @@ const Form = (props) => {
                 url: ""
             });
             setExpanded(!expanded);
-            await router.push("/")
+            // await router.push("/")
             // history.push("/")
             // history.push("/");
             // history.pushState('/')
@@ -302,8 +306,8 @@ const Form = (props) => {
             </div>
             <ReCAPTCHA
                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-                size={"invisible"}
-                ref={reRef}
+                size="invisible"
+                ref={recaptchaRef}
             />
             <Card
                 display="flex"
