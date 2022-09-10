@@ -9,7 +9,7 @@ export default async (req, res) => {
     // Google Recaptcha check
     const human = validateHuman(req.body.token);
     const recaptchaSuccess = await human;
-    console.log("TOKEN IS: ", req.body.token);
+    // console.log("TOKEN IS: ", req.body.token);
 
     async function validateHuman(token) {
         const secret = process.env.RECAPTCHA_SECRET_KEY;
