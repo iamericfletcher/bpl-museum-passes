@@ -22,7 +22,7 @@ export default function Index(props) {
 }
 
 export async function getServerSideProps() {
-	const res = await fetch("http://localhost:3001")
+	const res = await fetch(process.env.SERVER_URL)
 		.then(res => res.json())
 		.catch(res => res)
 

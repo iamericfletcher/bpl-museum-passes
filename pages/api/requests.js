@@ -7,7 +7,7 @@ export default async (req, res) => {
 
 	console.log(req.body)
 
-	const response = await fetch('http://localhost:3001/', {
+	const response = await fetch(process.env.SERVER_URL, {
 		method: "POST",
 		headers: {
 			'Content-type': 'application/json'

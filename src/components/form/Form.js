@@ -73,7 +73,7 @@ const Form = (props) => {
     const [dateForURL, setDateForURL] = useState();
     const [open, setOpen] = React.useState(false);
     const [submitDisabled, setSubmitDisabled] = React.useState(false);
-    const reRef = useRef();
+    const recaptchaRef = useRef();
     const router = useRouter()
 
     useEffect(() => {
@@ -214,8 +214,8 @@ const Form = (props) => {
         e.preventDefault()
         setSubmitDisabled(true)
         try {
-            const token = reRef.current.execute();
-            reRef.current.reset();
+            const recaptchaValue = await recaptchaRef.current.executeAsync();
+            recaptchaRef.current.reset();
             const body = {
                 museum: formValues.museum,
                 dateOfVisit: formValues.date,
@@ -227,7 +227,7 @@ const Form = (props) => {
             await fetch(`/api/requests`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({body: body, token: token}),
+                body: JSON.stringify({body: body, token: recaptchaValue}),
             })
             setFormValues({
                 ...formValues,
@@ -303,7 +303,7 @@ const Form = (props) => {
             <ReCAPTCHA
                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
                 size={"invisible"}
-                ref={reRef}
+                ref={recaptchaRef}
             />
             <Card
                 display="flex"
