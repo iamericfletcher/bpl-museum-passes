@@ -213,6 +213,11 @@ const Form = (props) => {
     const handleSubmit = async e => {
         e.preventDefault()
         setSubmitDisabled(true)
+        const recaptchaValue = await recaptchaRef.current.executeAsync();
+        recaptchaRef.current.reset();
+        // console.log("Recaptcha value: " + recaptchaValue)
+        // const token = await reRef.current.executeAsync;
+        // reRef.current.reset();
         try {
             const recaptchaValue = await recaptchaRef.current.executeAsync();
             recaptchaRef.current.reset();
@@ -239,7 +244,7 @@ const Form = (props) => {
                 url: ""
             });
             setExpanded(!expanded);
-            await router.push("/")
+            // await router.push("/")
             // history.push("/")
             // history.push("/");
             // history.pushState('/')
