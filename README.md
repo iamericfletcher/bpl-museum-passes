@@ -28,9 +28,9 @@ Link to the backend GitHub repository - https://github.com/iamericfletcher/bpl-m
 
 **Digital Ocean for hosting the Node back end**
 
-Started off with Vercel hosting the frontend and backend, but very quickly eclipsed their (serverless functions execution timeout)[https://vercel.com/docs/concepts/functions/serverless-functions#execution-timeout] threshold. 
+Started off with Vercel hosting the frontend and backend, but very quickly eclipsed their [serverless functions execution timeout](https://vercel.com/docs/concepts/functions/serverless-functions#execution-timeout) threshold. 
 
-There is a ton a web scraping that needs to take place, so my serverless functions were taking between 3-4 minutes to complete. [Nathan @Yofou](https://github.com/Yofou) was gracious enough to help me decouple the backend code from the Next.js codebase. 
+There is a ton a web scraping that needs to take place, so my serverless functions were taking between 3-4 minutes to complete. (Nathan @Yofou)[https://github.com/Yofou] was gracious enough to help me decouple the backend code from the Next.js codebase. 
 
 **PM2 for process management**
 
