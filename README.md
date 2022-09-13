@@ -226,6 +226,5 @@ Eric Fletcher
 
 ## Acknowledgments
 
-Inspiration, code snippets, etc.
 * [web dev and web design Discord server](https://discord.gg/TZC5Rrpt)
 * [Nathan @Yofou for his wisdom, guidance, and time](https://github.com/Yofou)
