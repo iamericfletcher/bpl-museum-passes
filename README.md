@@ -1,4 +1,4 @@
-# Boston Public Library Museum Pass Notification Application
+# Boston Public Library Museum Pass Notification Application - Frontend Repo
 
 I recently joined the Boston Public Library.
 
@@ -9,6 +9,8 @@ Unfortunately, their current reservation system does not include user notificati
 I found this frustrating, so I built a notification application that notifies users when the next pass becomes available via email and/or text (us-based numbers only).
 
 Most of the museum options have plenty of passes available all the time. This application is more helpful for the small number of museums that regularly have no passes available in the near term (Isabella Stewart Gardner Museum, etc.)
+
+Link to the backend GitHub repository - https://github.com/iamericfletcher/bpl-museum-passes-backend
 
 ## Technology Stack
 
