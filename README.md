@@ -1,4 +1,4 @@
-# Boston Public Library Museum Pass Notification Application - Frontend Repo
+# Boston Public Library Museum Pass Notification Application - Front End Repo
 
 I recently joined the Boston Public Library.
 
@@ -10,7 +10,7 @@ I found this frustrating, so I built a notification application that notifies us
 
 Most of the museum options have plenty of passes available all the time. This application is more helpful for the small number of museums that regularly have no passes available in the near term (Isabella Stewart Gardner Museum, etc.)
 
-Link to the backend GitHub repository - https://github.com/iamericfletcher/bpl-museum-passes-backend
+Link to the back end GitHub repository - https://github.com/iamericfletcher/bpl-museum-passes-backend
 
 ## Technology Stack
 
@@ -28,9 +28,9 @@ Link to the backend GitHub repository - https://github.com/iamericfletcher/bpl-m
 
 **Digital Ocean for hosting the Node back end**
 
-Started off with Vercel hosting the frontend and backend, but very quickly eclipsed their [serverless functions execution timeout](https://vercel.com/docs/concepts/functions/serverless-functions#execution-timeout) threshold. 
+Started off with Vercel hosting the front end and back end, but very quickly eclipsed their [serverless functions execution timeout](https://vercel.com/docs/concepts/functions/serverless-functions#execution-timeout) threshold. 
 
-There is a ton a web scraping that needs to take place, so my serverless functions were taking between 3-4 minutes to complete. [Nathan @Yofou](https://github.com/Yofou) was gracious enough to help me decouple the backend code from the Next.js codebase. 
+There is a ton a web scraping that needs to take place, so my serverless functions were taking between 3-4 minutes to complete. [Nathan @Yofou](https://github.com/Yofou) was gracious enough to help me decouple the back end code from the Next.js codebase. 
 
 **PM2 for process management**
 
