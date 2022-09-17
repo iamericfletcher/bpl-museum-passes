@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -13,12 +13,7 @@ import PropTypes from "prop-types";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import moment, {isMoment} from "moment";
-import { useRouter } from "next/router";
-
-
-
-// import LoadingButton from '@mui/lab/LoadingButton';
-
+import {useRouter} from "next/router";
 import {
     ButtonGroup,
     Card,
@@ -26,7 +21,11 @@ import {
     CardHeader,
     CardMedia,
     Collapse,
-    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Tooltip,
     tooltipClasses
 } from "@mui/material";
@@ -34,9 +33,12 @@ import Typography from "@mui/material/Typography";
 import {styled} from "@mui/material/styles";
 import BuyMeACoffeeButton from "../BuyMeACoffeeButton";
 import ReCAPTCHA from "react-google-recaptcha";
-import {Router} from "next/router";
+import dayjs from "dayjs";
 
+let nameForURL = "";
+let dateForURL = "";
 
+// Phone number input mask
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
     const {onChange, ...other} = props;
     return (
@@ -51,11 +53,19 @@ const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
         />
     );
 });
+
 TextMaskCustom.propTypes = {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
 };
 
+
+// function for setting the maxDate for DatePicker
+const setMaxDate = (daysToAdd) => {
+    const now = new Date()
+    const nowPlusDays = now.setDate(now.getDate() + daysToAdd)
+    return moment(dayjs(nowPlusDays).format('YYYY-MM-DD'))
+}
 
 const Form = (props) => {
     const dayjs = require('dayjs')
@@ -69,17 +79,10 @@ const Form = (props) => {
     };
     const [formValues, setFormValues] = useState(defaultValues);
     const [expanded, setExpanded] = React.useState(false);
-    const [nameForURL, setNameForURL] = useState();
-    const [dateForURL, setDateForURL] = useState();
     const [open, setOpen] = React.useState(false);
     const [submitDisabled, setSubmitDisabled] = React.useState(false);
     const recaptchaRef = useRef();
     const router = useRouter()
-
-    useEffect(() => {
-        formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
-        console.log(formValues.url)
-    }, [nameForURL, dateForURL])
 
     const CustomWidthTooltip = styled(({className, ...props}) => (
         <Tooltip {...props} classes={{popper: className}}/>
@@ -112,58 +115,37 @@ const Form = (props) => {
         }
     };
 
-    // function for setting the maxDate for DatePicker
-    const setMaxDate = (daysToAdd) => {
-        const now = new Date()
-        const nowPlusDays = now.setDate(now.getDate() + daysToAdd)
-        return moment(dayjs(nowPlusDays).format('YYYY-MM-DD'))
-    }
     const handleInputChange = (event) => {
         // Used for the date picker
         if (isMoment(event)) {
-            setDateForURL(event.format('MM/DD/YYYY'))
-            console.log(event)
+            dateForURL = event.format('MM/DD/YYYY')
+            console.log("Date for URL: " + dateForURL)
             setFormValues({
                 ...formValues,
                 date: event.format('YYYY-MM-DD')
             });
             if (props.museumObj[formValues.museum][event.format('YYYY-MM-DD')] === undefined) {
-                // formValues.date = event.format('YYYY-MM-DD');
                 formValues.initialNumPasses = 0;
-                // setDateForURL(event.format('MM/DD/YYYY'))
-                // console.log("Date for URL: " + dateForURL)
             } else {
-                // formValues.date = event.format('YYYY-MM-DD');
                 setFormValues({
                     ...formValues,
                     date: event.format('YYYY-MM-DD'),
                     initialNumPasses: props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]
                 });
-                // formValues.initialNumPasses = props.museumObj[formValues.museum][event.format('YYYY-MM-DD')];
-                // setDateForURL(event.format('MM/DD/YYYY'))
-                // console.log("Date for URL: " + dateForURL)
             }
-            // formValues.dateForURL = event.format('MM/DD/YYYY')
-            // setDateForURL(event.format('MM/DD/YYYY'))
-            // formValues.dateForURL = event.format('MM/DD/YYYY')
-            // console.log("Date for URL: " + dateForURL)
         } else if (!isMoment(event) && event !== null && event.target.name !== "email" && event.target.name !== "phone") {
-            // formValues.museum = event.target.value;
-            // console.log("Museum: " + event.target.value)
             setFormValues({
                 ...formValues,
                 museum: event.target.value
             });
             if (event.target.name === "museum") {
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
-                    // formValues.initialNumPasses = 0;
                     setFormValues({
                         ...formValues,
                         museum: event.target.value,
                         initialNumPasses: 0
                     });
                 } else {
-                    // formValues.initialNumPasses = props.museumObj[event.target.value.toString()][formValues.date];
                     setFormValues({
                         ...formValues,
                         museum: event.target.value,
@@ -176,13 +158,11 @@ const Form = (props) => {
                 // e.g. Museum of Fine Arts -> Museum of Fine Arts (e-voucher)
                 for (let i = 0; i < props.museumNamesForScraping.length; i++) {
                     if (props.museumNamesForScraping[i].toString().split("(")[0] === event.target.value) {
-                        // formValues.nameForURL = props.museumNamesForScraping[i].toString()
-                        setNameForURL(props.museumNamesForScraping[i].toString())
-                        // formValues.nameForURL = props.museumNamesForScraping[i].toString()
+                        // setNameForURL(props.museumNamesForScraping[i].toString())
+                        nameForURL = props.museumNamesForScraping[i].toString()
                         console.log("Name for URL: " + nameForURL)
                     }
                 }
-                // console.log(formValues)
             }
         } else {
             setFormValues({
@@ -190,24 +170,6 @@ const Form = (props) => {
                 [event.target.name]: event.target.value
             });
         }
-        formValues.url = "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL
-        // console.log(formValues)
-    };
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-        // Phone number label doesn't hold when notify me button is clicked and then no longer expanded then reopened
-        //TODO fix this
-        if (!expanded) {
-            setFormValues({
-                ...formValues,
-                // email: "",
-                // phone: "",
-            });
-        }
-    }
-    // Toggle the dialog box with instructions
-    const handleClose = () => {
-        setOpen(!open);
     };
 
     const handleSubmit = async e => {
@@ -215,9 +177,6 @@ const Form = (props) => {
         setSubmitDisabled(true)
         const recaptchaValue = await recaptchaRef.current.executeAsync();
         recaptchaRef.current.reset();
-        // console.log("Recaptcha value: " + recaptchaValue)
-        // const token = await reRef.current.executeAsync;
-        // reRef.current.reset();
         try {
             const recaptchaValue = await recaptchaRef.current.executeAsync();
             recaptchaRef.current.reset();
@@ -227,7 +186,7 @@ const Form = (props) => {
                 initialNumPasses: formValues.initialNumPasses,
                 email: formValues.email,
                 phone: formValues.phone,
-                url: formValues.url,
+                url: "https://www.eventkeeper.com/mars/tkflex.cfm?curOrg=BOSTON&curNumDays=60&curKey2=AVA&curKey1=" + nameForURL + "&curPassStartDate=" + dateForURL,
             };
             await fetch(`/api/requests`, {
                 method: 'POST',
@@ -244,11 +203,6 @@ const Form = (props) => {
                 url: ""
             });
             setExpanded(!expanded);
-            // await router.push("/")
-            // history.push("/")
-            // history.push("/");
-            // history.pushState('/')
-            // await Router.push('/')
         } catch (error) {
             console.error(error)
         } finally {
@@ -270,7 +224,9 @@ const Form = (props) => {
                 {/*<Button onClick={handleClickOpen('body')}>scroll=body</Button>*/}
                 <Dialog
                     open={open}
-                    onClose={handleClose}
+                    onClose={() => {
+                        setOpen(!open)
+                    }}
                     scroll={'paper'}
                     aria-labelledby="scroll-dialog-title"
                     aria-describedby="scroll-dialog-description"
@@ -286,22 +242,32 @@ const Form = (props) => {
                             <b>Step 2:</b> <br/>Select the date you want to visit the museum. <br/> <br/>
                             Note that data is provided for the next 60 days only. <br/> <br/>
                             <b>Step 3:</b> <br/>
-                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark><br/> <br/>
-                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification when the next pass becomes available (due to cancellations, etc.)
+                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark>
                             <br/> <br/>
-                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark><br/> <br/>
-                            Click the <b>RESERVE PASS</b> button to reserve a pass via the <a href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'}>Boston Public Library Museum Passes website</a>.
+                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification
+                            when the next pass becomes available (due to cancellations, etc.)
+                            <br/> <br/>
+                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark>
+                            <br/> <br/>
+                            Click the <b>RESERVE PASS</b> button to reserve a pass via the <a
+                            href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'}>Boston Public Library
+                            Museum Passes website</a>.
                             <br/>
                             <br/>
                             OR
                             <br/>
                             <br/>
-                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification when the next pass becomes available (due to cancellations, etc.)
+                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification
+                            when the next pass becomes available (due to cancellations, etc.)
                             <br/>
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose}>Close</Button>
+                        <Button
+                            onClick={() => {
+                                setOpen(!open);
+                            }}
+                        >Close</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -427,7 +393,9 @@ const Form = (props) => {
                         color="primary"
                         type="button"
                         variant="contained"
-                        onClick={handleExpandClick}
+                        onClick={() => {
+                            setExpanded(!expanded);
+                        }}
                         sx={{width: 150, height: "100%"}}
                         disabled={formValues.date === null || formValues.date === "" || formValues.museum === ""}
                     >
@@ -491,13 +459,13 @@ const Form = (props) => {
                                     {/*  >*/}
                                     {/*      Submit*/}
                                     {/*</LoadingButton>*/}
-                            <Button
-                                sx={{width: 150, height: 48}}
-                                color="primary"
-                                type="submit"
-                                variant="contained"
-                                disabled={submitDisabled || (formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14 || formValues.email !== "" && formValues.phone !== "" && formValues.phone.length !== 14}
-                            >
+                                    <Button
+                                        sx={{width: 150, height: 48}}
+                                        color="primary"
+                                        type="submit"
+                                        variant="contained"
+                                        disabled={submitDisabled || (formValues.email === "" && formValues.phone === "") || formValues.email === "" && formValues.phone.length !== 14 || formValues.email !== "" && formValues.phone !== "" && formValues.phone.length !== 14}
+                                    >
                                 Submit
                             </Button>
                                     </span>
@@ -508,11 +476,9 @@ const Form = (props) => {
                 <br/>
                 <span>
                 <Button
-                    // color={"warning"}
-                    // type="button"
-                    // variant="contained"
-                    // sx={{width: 150, marginRight: 0.5, height: "100%"}}
-                    onClick={handleClose}
+                    onClick={() => {
+                        setOpen(!open);
+                    }}
                 >
                     Instructions
                 </Button>
