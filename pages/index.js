@@ -27,9 +27,15 @@ export async function getServerSideProps() {
 		.catch(res => res)
 
 	if (res.message) {
-		// redirect to error page here.
+		// redirect to error page if no cache is included from server
+        return {
+            props: {},
+            redirect: {
+                destination: '/error',
+                permanent: false,
+            },
+        }
 	}
-
 	return {
 		props: res
 	}

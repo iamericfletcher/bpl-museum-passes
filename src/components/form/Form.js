@@ -82,7 +82,6 @@ const Form = (props) => {
     const [open, setOpen] = React.useState(false);
     const [submitDisabled, setSubmitDisabled] = React.useState(false);
     const recaptchaRef = useRef();
-    const router = useRouter()
 
     const CustomWidthTooltip = styled(({className, ...props}) => (
         <Tooltip {...props} classes={{popper: className}}/>
@@ -238,28 +237,40 @@ const Form = (props) => {
                             // ref={descriptionElementRef}
                             tabIndex={-1}
                         >
-                            <b>Step 1:</b> <br/>Select the museum name from the dropdown menu. <br/> <br/>
-                            <b>Step 2:</b> <br/>Select the date you want to visit the museum. <br/> <br/>
-                            Note that data is provided for the next 60 days only. <br/> <br/>
-                            <b>Step 3:</b> <br/>
-                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark>
-                            <br/> <br/>
-                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification
-                            when the next pass becomes available (due to cancellations, etc.)
-                            <br/> <br/>
-                            <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark>
-                            <br/> <br/>
-                            Click the <b>RESERVE PASS</b> button to reserve a pass via the <a
-                            href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'}>Boston Public Library
-                            Museum Passes website</a>.
-                            <br/>
-                            <br/>
-                            OR
-                            <br/>
-                            <br/>
-                            Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text notification
-                            when the next pass becomes available (due to cancellations, etc.)
-                            <br/>
+                            <Typography variant="body1">
+                                <b>Step 1:</b> <br/>Select the museum name from the dropdown menu. <br/> <br/>
+                                <b>Step 2:</b> <br/>Select the date you want to visit the museum. <br/> <br/>
+                                Note that data is provided for the next 60 days only. <br/> <br/>
+                                <b>Step 3:</b> <br/>
+                                <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is 0</u></mark>
+                                <br/> <br/>
+                                Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text
+                                notification
+                                when the next pass becomes available (due to cancellations, etc.)
+                                <br/> <br/>
+                                <mark><u>If <b>TOTAL NUMBER OF PASSES AVAILABLE</b> is greater than 0</u></mark>
+                                <br/> <br/>
+                                Click the <b>RESERVE PASS</b> button to reserve a pass via the <a
+                                href="https://www.bpl.org/reserve-a-museum-pass/" target={'_blank'} rel="noreferrer">Boston
+                                Public Library
+                                Museum Passes website</a>.
+                                <br/>
+                                <br/>
+                                OR
+                                <br/>
+                                <br/>
+                                Click the <b>NOTIFY ME</b> button to receive an email and/or mobile phone text
+                                notification
+                                when the next pass becomes available (due to cancellations, etc.)
+                                <br/>
+                                <br/>
+                                <b>Data:</b> <br/>
+                                Data is deleted from the database whenever a notification is sent
+                                out
+                                or if a pass doesn't become available by end of the day on the user provided date of
+                                visit.
+                                Absolutely no data is used for any other purpose such as marketing or advertising.
+                            </Typography>
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
