@@ -18,7 +18,7 @@ export default function MyApp(props) {
     <CacheProvider value={emotionCache}>
         <Script strategy="lazyOnload" src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`} />
 
-        <Script strategy="lazyOnload">
+        <Script strategy="lazyOnload" id="google-analytics-script">
             {`
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
@@ -29,7 +29,9 @@ export default function MyApp(props) {
                 `}
         </Script>
       <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+          <title>Boston Public Library Museum Pass Notifications</title>
+        <meta name="viewport" content="initial-scale=1, width=device-width"/>
+        <meta name="description" content="Get notified when the Boston Public Library Museum Passes are available."/>
       </Head>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
