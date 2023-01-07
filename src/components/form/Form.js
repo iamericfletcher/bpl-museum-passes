@@ -124,8 +124,15 @@ const Form = (props) => {
                 date: event.format('YYYY-MM-DD')
             });
             if (props.museumObj[formValues.museum][event.format('YYYY-MM-DD')] === undefined) {
-                formValues.initialNumPasses = 0;
+                console.log("1");
+                console.log(props.museumObj[formValues.museum][event.format('YYYY-MM-DD')]);
+                setFormValues({
+                    ...formValues,
+                    date: event.format('YYYY-MM-DD'),
+                    initialNumPasses: 0
+                });
             } else {
+                console.log("2");
                 setFormValues({
                     ...formValues,
                     date: event.format('YYYY-MM-DD'),
@@ -139,12 +146,14 @@ const Form = (props) => {
             });
             if (event.target.name === "museum") {
                 if (props.museumObj[event.target.value.toString()][formValues.date] === undefined) {
+                    console.log("3");
                     setFormValues({
                         ...formValues,
                         museum: event.target.value,
                         initialNumPasses: 0
                     });
                 } else {
+                    console.log("4");
                     setFormValues({
                         ...formValues,
                         museum: event.target.value,
