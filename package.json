@@ -29,6 +29,7 @@
     "cors": "^2.8.5",
     "dayjs": "^1.11.4",
     "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
     "emotion": "^11.0.0",
     "http-proxy-middleware": "^2.0.6",
     "mailgun.js": "^8.0.1",
