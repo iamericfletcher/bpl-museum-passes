@@ -59,12 +59,14 @@ class Error extends Component {
 }
 
 export async function getServerSideProps() {
+    console.log("getServerSideProps() from error.js");
     // Upon reload of page, check the cache to see if anything is there
     const res = await fetch(process.env.SERVER_URL)
         .then(res => res.json())
         .catch(res => res)
     if (!res.message) {
-        console.log("getStaticProps: res.message is null");
+        // redirect user to index page if cache is included from server
+        console.log("Cache is no longer null from error.js");
         return {
             props: {},
             redirect: {
@@ -73,7 +75,7 @@ export async function getServerSideProps() {
             },
         }
     }
-    console.log("getStaticProps: res.message is not null");
+    console.log("Cache is null from error.js");
     return {
         props: {},
     }

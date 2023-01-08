@@ -2,6 +2,7 @@ import * as React from "react";
 import Form from "../src/components/form/Form";
 import Container from "@mui/material/Container";
 
+
 export default function Index(props) {
     return (
         <Container
@@ -22,18 +23,20 @@ export default function Index(props) {
 }
 
 export async function getServerSideProps() {
+    console.log("getServerSideProps() from index.js");
 	const res = await fetch(process.env.SERVER_URL)
 		.then(res => res.json())
 		.catch(res => res)
 
 	if (res.message) {
-		// redirect to error page if no cache is included from server
+        console.log("Cache is null from index.js");
+		// redirect user to error page if no cache is included from server
         return {
             props: {},
             redirect: {
                 destination: '/error',
                 permanent: false,
-            },
+            }
         }
 	}
 	return {
